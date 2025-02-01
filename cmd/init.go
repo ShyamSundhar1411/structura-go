@@ -5,9 +5,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-
-	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
 
@@ -30,7 +27,7 @@ var initCmd = &cobra.Command{
 		project.Name = interactivePrompt("Project Name", "my-project")
 		project.Path = interactivePrompt("Project Path", "./"+project.Name)
 		project.Description = interactivePrompt("Project Description", "A new Go project")
-		project.Architecture = selectArchitecture()
+		project.Architecture = selectPrompt("Select Architecture",[]string{"MVC", "MVCS", "MVP", "MVPF", "MVI"})
 		fmt.Print("Project '%s' initialized successfully at '%s'\n", project.Name, project.Path)
 	},
 }
@@ -51,29 +48,4 @@ func init() {
 	initCmd.Flags().StringP("path", "p", "", "Path to initialize the project")
 	initCmd.Flags().StringP("description", "d", "", "Description of the project")
 	initCmd.Flags().StringP("architecture", "a", "", "Architecture to use (MVC, MVCS, etc.)")
-}
-func interactivePrompt(label, defaultValue string) string {
-	prompt := promptui.Prompt{
-		Label:   label,
-		Default: defaultValue,
-	}
-	result, err := prompt.Run()
-	if err != nil{
-		fmt.Println("Error during generation",err)
-		os.Exit(1)
-	}
-	return result
-}
-
-func selectArchitecture()string{
-	prompt := promptui.Select{
-		Label: "Select Architecture",
-		Items: []string{"MVC", "MVCS", "MVP", "MVPF", "MVI"},
-	}
-	_, result, err := prompt.Run()
-	if err != nil{
-		fmt.Println("Error during generation", err)
-		os.Exit(1)
-	}
-	return result
 }
