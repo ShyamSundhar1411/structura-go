@@ -12,21 +12,21 @@ func selectPrompt(label string, options []string) string {
 		Label: label,
 		Items: options,
 	}
-	_,result,err := prompt.Run()
+	_, result, err := prompt.Run()
 	if err != nil {
-		fmt.Println("Error during prompt",err)
+		fmt.Println("Error during prompt", err)
 		os.Exit(1)
 	}
 	return result
 }
 
-func interactivePrompt(label, defaultValue string) string{
+func interactivePrompt(label, defaultValue string) string {
 	prompt := promptui.Prompt{
-		Label: label,
+		Label:   label,
 		Default: defaultValue,
 	}
-	result,err := prompt.Run()
-	if err != nil{
+	result, err := prompt.Run()
+	if err != nil {
 		fmt.Println("Error during prompt", err)
 		os.Exit(1)
 	}

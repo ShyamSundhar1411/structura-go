@@ -9,9 +9,9 @@ import (
 )
 
 type Project struct {
-	Name string
-	Path string
-	Description string
+	Name         string
+	Path         string
+	Description  string
 	Architecture string
 }
 
@@ -27,7 +27,7 @@ var initCmd = &cobra.Command{
 		project.Name = interactivePrompt("Project Name", "my-project")
 		project.Path = interactivePrompt("Project Path", "./"+project.Name)
 		project.Description = interactivePrompt("Project Description", "A new Go project")
-		project.Architecture = selectPrompt("Select Architecture",[]string{"MVC", "MVCS", "MVP", "MVPF", "MVI"})
+		project.Architecture = selectPrompt("Select Architecture", []string{"MVC", "MVCS", "MVP", "MVPF", "MVI"})
 		fmt.Print("Project '%s' initialized successfully at '%s'\n", project.Name, project.Path)
 	},
 }
