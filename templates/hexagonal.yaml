@@ -1,0 +1,6 @@
+architecture: Hexagonal
+folders:
+  - application
+  - domain
+  - infrastructures
+  - interfaces

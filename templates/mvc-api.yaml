@@ -1,0 +1,7 @@
+architecture: MVC-API
+folders:
+  - controllers
+  - models
+  - views
+  - routes
+

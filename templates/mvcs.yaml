@@ -1,0 +1,6 @@
+architecture: MVCS
+folders:
+  - controllers
+  - models
+  - routes
+  - services
