@@ -1,6 +1,7 @@
 architecture: Hexagonal
+description: "Hexagonal Architecture (also known as Ports and Adapters) separates the core business logic from the external systems (like databases, APIs, or user interfaces). The main goal is to make the core logic independent of external frameworks and tools."
 folders:
-  - application
-  - domain
-  - infrastructures
-  - interfaces
+  - application   # Contains the application's use cases or services
+  - domain        # Contains domain models or core entities
+  - infrastructure # Deals with external systems (DB, external services)
+  - interfaces     # Exposes the application's functionality to the outside world (e.g., HTTP APIs, CLI)
