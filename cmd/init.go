@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -27,8 +28,15 @@ var initCmd = &cobra.Command{
 		project.Name = interactivePrompt("Project Name", "my-project")
 		project.Path = interactivePrompt("Project Path", "./"+project.Name)
 		project.Description = interactivePrompt("Project Description", "A new Go project")
-		project.Architecture = selectPrompt("Select Architecture", []string{"MVC", "MVCS", "MVP", "MVPF", "MVI"})
-		fmt.Print("Project '%s' initialized successfully at '%s'\n", project.Name, project.Path)
+		project.Architecture = selectPrompt("Select Architecture", []string{"MVC","MVC-API","MVCS", "Hexagonal"})
+		template,err := loadTemplateFromArchitecture("./templates/",project.Architecture)
+		if err != nil {
+			fmt.Println("Error loading template:", err)
+			return
+		}
+		
+		fmt.Printf("\n📂 Project Structure for '%s' (%s Architecture):\n", project.Name, project.Architecture)
+		printFolderStructure(template.Folders, "")
 	},
 }
 

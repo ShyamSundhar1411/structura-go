@@ -26,6 +26,7 @@ var listCmd = &cobra.Command{
 		fmt.Println("📌 Available Architectures:")
 		for _, tmpl := range architectures {
 			fmt.Printf("🔹 %s: %s\n", tmpl.Architecture, tmpl.Description)
+			printFolderStructure(tmpl.Folders,"")
 		}
 	},
 }
