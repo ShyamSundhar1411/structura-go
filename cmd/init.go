@@ -5,16 +5,13 @@ package cmd
 
 import (
 	"fmt"
-
+	"github.com/ShyamSundhar1411/structura-go/domain"
 	"github.com/spf13/cobra"
 )
 
-type Project struct {
-	Name         string
-	Path         string
-	Description  string
-	Architecture string
-}
+
+
+
 
 // initCmd represents the init command
 var initCmd = &cobra.Command{
@@ -24,11 +21,11 @@ var initCmd = &cobra.Command{
 	like MVC, MVCS, etc. It creates the necessary directories based on your
 	chosen architecture.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var project Project
-		project.Name = interactivePrompt("Project Name", "my-project")
-		project.Path = interactivePrompt("Project Path", "./"+project.Name)
-		project.Description = interactivePrompt("Project Description", "A new Go project")
-		project.Architecture = selectPrompt("Select Architecture", []string{"MVC","MVC-API","MVCS", "Hexagonal"})
+		var project domain.Project
+		
+		
+		project = *assignProjectAttributes(&project,cmd)
+		
 		template,err := loadTemplateFromArchitecture("./templates/",project.Architecture)
 		if err != nil {
 			fmt.Println("Error loading template:", err)
