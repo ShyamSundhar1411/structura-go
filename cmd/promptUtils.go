@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/ShyamSundhar1411/structura-go/domain"
@@ -141,4 +142,69 @@ func assignProjectAttributes(project *domain.Project,cmd *cobra.Command)(*domain
 		}
 	}
 	return project
+}
+func createFolder(parentPath string,folders interface{})error{
+	switch folder := folders.(type) {
+	case []interface{}:
+		for _, folder := range folder {
+			if str, ok := folder.(string); ok {
+				folderPath := filepath.Join(parentPath, str)
+				err := os.Mkdir(folderPath, 0755)
+				if err != nil {
+					return fmt.Errorf("⚠️ Error creating folder: %s -> %v", folderPath, err)
+					
+				}
+			} else {
+				return fmt.Errorf("⚠️ Unexpected non-string folder: %v", folder)
+			}
+		}
+	case map[string]interface{}:
+		for parent, subfolders := range folder {
+			folderPath := filepath.Join(parentPath, parent)
+			err := os.Mkdir(folderPath, 0755)
+			if err != nil {
+				return fmt.Errorf("⚠️ Error creating folder: %s -> %v", folderPath, err)
+				
+			}
+			if err := createFolder(folderPath, subfolders); err != nil {
+				return err
+			}
+		}
+	default:
+		return fmt.Errorf("⚠️ Unknown folder structure format: %v", folder)
+	}
+	return nil
+}
+func createArchitectureStructure(project *domain.Project){
+	architecture := strings.ToLower(project.Architecture)
+	template, err := loadTemplateFromArchitecture("./templates", architecture)
+	if err != nil {
+		fmt.Println("⚠️ Error loading template:", err)
+		os.Exit(1)
+	}
+	projectRoot := filepath.Join(project.Path, project.Name)
+	if err := os.MkdirAll(projectRoot, 0755); err != nil {
+		fmt.Println("⚠️ Error creating project root:", err)
+		return
+	}
+	content := []byte(`package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello, Go Project!")
+}`)
+	filePath := filepath.Join(projectRoot, "main.go")
+	if err := os.WriteFile(filePath, content, 0644); err != nil {
+		fmt.Println("❌ Error writing file:", err)
+		return
+	}
+	fmt.Println("✅ main.go created successfully at", filePath)
+
+	if err := createFolder(project.Path, template.Folders); err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("✅ Folder structure created successfully at", projectRoot)
+	
 }

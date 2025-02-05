@@ -34,6 +34,7 @@ var initCmd = &cobra.Command{
 		
 		fmt.Printf("\n📂 Project Structure for '%s' (%s Architecture):\n", project.Name, project.Architecture)
 		printFolderStructure(template.Folders, "")
+		createArchitectureStructure(&project)
 	},
 }
 
