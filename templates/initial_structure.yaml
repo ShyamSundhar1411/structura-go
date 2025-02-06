@@ -1,4 +1,5 @@
 - name: main.go
+  directory: "app"
   description: "A Sample Broiler Plate for main.go"
   content: |
     package main
@@ -8,3 +9,33 @@
     func main() {
       fmt.Println("Hello, World!")
     }
+
+- name: .env
+  directory: "root"
+  description: "A Sample Env file"
+  content: |
+    # .env file sample
+
+    DB_HOST=localhost
+    DB_PORT=5432
+    DB_USER=username
+    DB_PASSWORD=password
+    DB_NAME=mydatabase
+
+    # API keys
+    API_KEY=your_api_key_here
+    SECRET_KEY=your_secret_key_here
+
+    # Application settings
+    DEBUG=true
+    LOG_LEVEL=info
+
+    # Email service configuration
+    SMTP_HOST=smtp.example.com
+    SMTP_PORT=587
+    SMTP_USER=email@example.com
+    SMTP_PASSWORD=emailpassword
+
+    # External service URLs
+    REDIS_URL=redis://localhost:6379
+    CACHE_TIMEOUT=300

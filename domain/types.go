@@ -19,7 +19,9 @@ type Template struct {
 
 type BoilerPlate struct{
 	Name string `yaml:"name"`
+	Directory string `yaml:"directory"`
 	Description string `yaml:"description"`
 	Content string `yaml:"content"`
+
 
 }

@@ -65,7 +65,7 @@ func CreateArchitectureStructure(project *Project) {
 		return
 	}
 	
-	if err := CreateBoilerPlates(projectRoot); err !=nil{
+	if err := CreateBoilerPlates(project); err !=nil{
 		fmt.Println(err)
 		return
 	}

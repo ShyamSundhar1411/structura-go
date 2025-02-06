@@ -39,9 +39,10 @@ func CreateFolder(parentPath string, folders interface{}) error {
 	}
 	return nil
 }
-func CreateBoilerPlates(projectRoot string) error{
+func CreateBoilerPlates(project *Project) error{
 boilerPlateFilePath := filepath.Join("templates", "initial_structure.yaml")
 	data, err := os.ReadFile(boilerPlateFilePath)
+	projectRoot := filepath.Join(project.Path, project.Name)
 	if err != nil {
 		return fmt.Errorf("❌ Error loading boiler plates: %v", err)
 	}
@@ -51,8 +52,15 @@ boilerPlateFilePath := filepath.Join("templates", "initial_structure.yaml")
 		return fmt.Errorf("❌ Error unmarshalling boiler plates: %v", err)
 	}
 	for _, file := range boilerPlates {
+		
 		content := []byte(file.Content)
-		filePath := filepath.Join(projectRoot, file.Name)
+		var filePath string
+		if(file.Directory == "root"){
+			filePath = filepath.Join(project.Path, file.Name)
+		}else{
+			filePath = filepath.Join(projectRoot, file.Name)
+		}
+		
 		if err := os.WriteFile(filePath, content, 0644); err != nil {
 			return fmt.Errorf("❌ Error writing file %s:%v", file.Name,err)
 		}
