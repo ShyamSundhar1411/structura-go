@@ -1,4 +1,4 @@
-architecture: MVC
+name: MVC
 description: "Model-View-Controller architecture is commonly used for web applications with a clear separation of concerns. The model manages the data, the view is responsible for rendering the user interface, and the controller handles user inputs and updates the model and view accordingly."
 folders:
   - controllers   # Contains all your controllers (e.g., logic for handling requests)

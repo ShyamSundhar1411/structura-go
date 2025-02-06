@@ -1,4 +1,4 @@
-architecture: Hexagonal
+name: Hexagonal
 description: "Hexagonal Architecture (also known as Ports and Adapters) separates the core business logic from the external systems (like databases, APIs, or user interfaces). The main goal is to make the core logic independent of external frameworks and tools."
 folders:
   internal:

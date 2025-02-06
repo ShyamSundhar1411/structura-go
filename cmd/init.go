@@ -23,18 +23,17 @@ var initCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var project domain.Project
 		
+		project = *domain.AssignProjectAttributes(&project,cmd)
 		
-		project = *assignProjectAttributes(&project,cmd)
-		
-		template,err := loadTemplateFromArchitecture("./templates/",project.Architecture)
+		template,err := domain.LoadTemplateFromArchitecture("./templates/",project.Architecture)
 		if err != nil {
 			fmt.Println("Error loading template:", err)
 			return
 		}
 		
 		fmt.Printf("\n📂 Project Structure for '%s' (%s Architecture):\n", project.Name, project.Architecture)
-		printFolderStructure(template.Folders, "")
-		createArchitectureStructure(&project)
+		domain.PrintFolderStructure(template.Folders, "")
+		domain.CreateArchitectureStructure(&project)
 	},
 }
 

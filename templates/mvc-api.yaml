@@ -1,4 +1,4 @@
-architecture: MVC-API
+name: MVC-API
 description: "MVC pattern for API-only projects. This architecture provides a clear separation of concerns by dividing the logic into controllers, models, and routes. There are no views as this is intended for building RESTful APIs."
 folders:
   - controllers   # Contains your controllers which handle API requests and responses

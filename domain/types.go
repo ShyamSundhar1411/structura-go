@@ -12,7 +12,14 @@ type Attribute struct{
 	Label string
 }
 type Template struct {
-	Architecture string `yaml:"architecture"`
+	Name string `yaml:"name"`
 	Description string `yaml:"description"`
 	Folders interface {} `yaml:"folders"`
+}
+
+type BoilerPlate struct{
+	Name string `yaml:"name"`
+	Description string `yaml:"description"`
+	Content string `yaml:"content"`
+
 }

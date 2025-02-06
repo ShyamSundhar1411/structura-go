@@ -1,12 +1,12 @@
 /*
 Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
 
+	"github.com/ShyamSundhar1411/structura-go/domain"
 	"github.com/spf13/cobra"
 )
 
@@ -18,15 +18,15 @@ var listCmd = &cobra.Command{
 	that can be used to generate project folder structures. This helps you 
 	select the appropriate architecture for your Go project setup.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		architectures, err := loadAllTemplates("./templates/")
+		architectures, err := domain.LoadAllTemplates("./templates/")
 		if err != nil {
 			fmt.Println("❌ Error loading templates:", err)
 			return
 		}
 		fmt.Println("📌 Available Architectures:")
 		for _, tmpl := range architectures {
-			fmt.Printf("🔹 %s: %s\n", tmpl.Architecture, tmpl.Description)
-			printFolderStructure(tmpl.Folders,"")
+			fmt.Printf("🔹 %s: %s\n", tmpl.Name, tmpl.Description)
+			domain.PrintFolderStructure(tmpl.Folders,"")
 		}
 	},
 }

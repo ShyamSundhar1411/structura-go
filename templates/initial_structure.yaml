@@ -1,0 +1,10 @@
+- name: main.go
+  description: "A Sample Broiler Plate for main.go"
+  content: |
+    package main
+
+    import "fmt"
+
+    func main() {
+      fmt.Println("Hello, World!")
+    }
