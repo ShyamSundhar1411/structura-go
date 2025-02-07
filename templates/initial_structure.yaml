@@ -78,3 +78,40 @@
 
     ## Contributing
     Contributions are welcome! Please submit a PR or create an issue.
+
+- name: .gitignore
+  description: "A .gitignore file for Go projects"
+  directory: "root"
+  content: |
+    # Binaries
+    *.exe
+    *.dll
+    *.so
+    *.dylib
+
+    # Build artifacts
+    /bin/
+    /obj/
+    /pkg/
+
+    # Go vendor
+    /vendor/
+
+    # IDE/editor config files
+    .vscode/
+    .idea/
+    *.swp
+    *~
+
+    # Dependency files
+    go.sum
+    go.work.sum
+
+    # Logs and temp files
+    *.log
+    *.out
+    /tmp/
+
+    # Executables
+    main
+    *.test
