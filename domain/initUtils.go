@@ -10,7 +10,7 @@ import (
 )
 
 func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
-	orderedFlags := []string{"name", "path", "description", "architecture"}
+	orderedFlags := []string{"name", "path", "description", "architecture","env",".gitignore","readme"}
 	attributes := map[string]Attribute{
 		"name": {
 			Field: &project.Name,
@@ -28,6 +28,18 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 			Field: &project.Architecture,
 			Label: "Project Architecture",
 		},
+		"env" :{
+			Field: &project.GenerateEnv,
+			Label: "Do you want to generate .env? [y/n]",
+		},
+		".gitignore":{
+			Field: &project.GenerateGitIgnore,
+			Label: "Do you want to generate .gitignore? [y/n]",
+		},
+		"readme":{
+			Field: &project.GenerateReadME,
+			Label: "Do you want to generate README.md ? [y/n]",
+		},
 	}
 	defaults := map[string]string{
 		"name":         "cmd",
@@ -40,12 +52,13 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 		attr := attributes[flag]
 		if cmd.Flags().Changed(flag) {
 			value, _ := cmd.Flags().GetString(flag)
-			*attr.Field = value
+			attr.Field = value
 		} else {
 			if flag == "architecture" {
-				*attr.Field = SelectPrompt(attr.Label, architectureOptions)
+				attr.Field = SelectPrompt(attr.Label, architectureOptions)
 			} else {
-				*attr.Field = InteractivePrompt(attr.Label, defaults[flag])
+
+				attr.Field = InteractivePrompt(attr.Label, defaults[flag])
 			}
 		}
 	}
