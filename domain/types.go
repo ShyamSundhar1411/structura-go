@@ -5,13 +5,12 @@ type Project struct {
 	Path         string
 	Description  string
 	Architecture string
-	GenerateEnv  bool
-	GenerateReadME bool
-	GenerateGitIgnore bool
+	GenerateEnv  string
+	GenerateReadME string
 }
 
 type Attribute struct{
-	Field interface{}
+	Field *string
 	Label string
 }
 type Template struct {

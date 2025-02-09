@@ -1,16 +1,18 @@
 package domain
+
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
+
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
-
 )
 
 func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
-	orderedFlags := []string{"name", "path", "description", "architecture","env",".gitignore","readme"}
+	orderedFlags := []string{"name", "path", "description", "architecture","env","readme"}
 	attributes := map[string]Attribute{
 		"name": {
 			Field: &project.Name,
@@ -32,10 +34,6 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 			Field: &project.GenerateEnv,
 			Label: "Do you want to generate .env? [y/n]",
 		},
-		".gitignore":{
-			Field: &project.GenerateGitIgnore,
-			Label: "Do you want to generate .gitignore? [y/n]",
-		},
 		"readme":{
 			Field: &project.GenerateReadME,
 			Label: "Do you want to generate README.md ? [y/n]",
@@ -52,13 +50,13 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 		attr := attributes[flag]
 		if cmd.Flags().Changed(flag) {
 			value, _ := cmd.Flags().GetString(flag)
-			attr.Field = value
+			*attr.Field = value
 		} else {
 			if flag == "architecture" {
-				attr.Field = SelectPrompt(attr.Label, architectureOptions)
+				*attr.Field = SelectPrompt(attr.Label, architectureOptions)
 			} else {
 
-				attr.Field = InteractivePrompt(attr.Label, defaults[flag])
+				*attr.Field = InteractivePrompt(attr.Label, defaults[flag])
 			}
 		}
 	}
@@ -82,6 +80,14 @@ func CreateArchitectureStructure(project *Project) {
 		fmt.Println(err)
 		return
 	}
+	if err := runGoModInit(project.Path, project.Name); err != nil {
+		fmt.Println("⚠️ Error initializing Go module:", err)
+		return
+	}
+	if err := installDependencyPackages(project.Path); err != nil {
+		fmt.Println("⚠️ Error installing dependency packages:", err)
+		return
+	}
 	if err := CreateFolder(project.Path, template.Folders); err != nil {
 		fmt.Println(err)
 		return
@@ -103,4 +109,20 @@ func LoadTemplateFromArchitecture(dir string, architecture string)(*Template, er
 		return nil,err
 	}
 	return &template, nil	
+}
+
+func runGoModInit(projectRoot, moduleName string) error {
+	cmd := exec.Command("go", "mod", "init", moduleName)
+	cmd.Dir = projectRoot
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
+}
+
+func installDependencyPackages(projectRoot string)error{
+	cmd := exec.Command("go","get","github.com/spf13/viper")
+	cmd.Dir = projectRoot
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }

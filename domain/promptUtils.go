@@ -34,8 +34,8 @@ func InteractivePrompt(label, defaultValue string) string {
 	return result
 }
 
-func validateInput(input string, validValues []string)error{
-	input = strings.ToLower(strings.TrimSpace(input)) 
+func validateInput(input string, validValues []string) error {
+	input = strings.ToLower(strings.TrimSpace(input))
 	for _, v := range validValues {
 		if input == strings.ToLower(v) {
 			return nil
