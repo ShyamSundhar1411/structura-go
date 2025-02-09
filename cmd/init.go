@@ -9,10 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
-
-
-
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
@@ -22,15 +18,15 @@ var initCmd = &cobra.Command{
 	chosen architecture.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var project domain.Project
-		
-		project = *domain.AssignProjectAttributes(&project,cmd)
-		
-		template,err := domain.LoadTemplateFromArchitecture("./templates/",project.Architecture)
+
+		project = *domain.AssignProjectAttributes(&project, cmd)
+
+		template, err := domain.LoadTemplateFromArchitecture("./templates/", project.Architecture)
 		if err != nil {
 			fmt.Println("Error loading template:", err)
 			return
 		}
-		
+
 		fmt.Printf("\n📂 Project Structure for '%s' (%s Architecture):\n", project.Name, project.Architecture)
 		domain.PrintFolderStructure(template.Folders, "")
 		domain.CreateArchitectureStructure(&project)
@@ -53,5 +49,5 @@ func init() {
 	initCmd.Flags().StringP("path", "p", "", "Path to initialize the project")
 	initCmd.Flags().StringP("description", "d", "", "Description of the project")
 	initCmd.Flags().StringP("architecture", "a", "", "Architecture to use (MVC, MVCS, etc.)")
-	initCmd.Flags().StringP("env","e","","Include Env file")
+	initCmd.Flags().StringP("env", "e", "", "Include Env file")
 }

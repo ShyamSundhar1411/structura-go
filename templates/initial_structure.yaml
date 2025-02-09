@@ -11,7 +11,7 @@
     }
 
 - name: .env
-  directory: "root"
+  directory: "app"
   description: "A Sample Env file"
   content: |
     # .env file sample
@@ -88,7 +88,7 @@
     *.dll
     *.so
     *.dylib
-
+    .env
     # Build artifacts
     /bin/
     /obj/
@@ -126,18 +126,25 @@
         "github.com/spf13/viper"
       )
     type Env struct {
-      AppEnv                 string `mapstructure:"APP_ENV"`
-      ServerPort             string `mapstructure:"SERVER_PORT"`
-      ContextTimeout         int    `mapstructure:"CONTEXT_TIMEOUT"`
-      DBHost                 string `mapstructure:"DB_HOST"`
-      DBPort                 string `mapstructure:"DB_PORT"`
-      DBName                 string `mapstructure:"DB_NAME"`
-      DBPass                 string `mapstructure:"DB_PASS"`
-      DBUser                 string `mapstructure:"DB_USER"`
-      AccessTokenExpiryHour  int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
-      RefreshTokenExpiryHour int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
-      AccessTokenSecretKey   string `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY"`
-      RefreshTokenSecretKey  string `mapstructure:"REFRESH_TOKEN_SECRET"`
+      DBHost     string `mapstructure:"DB_HOST"`
+      DBPort     int    `mapstructure:"DB_PORT"`
+      DBUser     string `mapstructure:"DB_USER"`
+      DBPassword string `mapstructure:"DB_PASSWORD"`
+      DBName     string `mapstructure:"DB_NAME"`
+
+      APIKey    string `mapstructure:"API_KEY"`
+      SecretKey string `mapstructure:"SECRET_KEY"`
+
+      Debug     bool   `mapstructure:"DEBUG"`
+      LogLevel  string `mapstructure:"LOG_LEVEL"`
+
+      SMTPHost  string `mapstructure:"SMTP_HOST"`
+      SMTPPort  int    `mapstructure:"SMTP_PORT"`
+      SMTPUser  string `mapstructure:"SMTP_USER"`
+      SMTPPass  string `mapstructure:"SMTP_PASSWORD"`
+
+      RedisURL     string `mapstructure:"REDIS_URL"`
+      CacheTimeout int    `mapstructure:"CACHE_TIMEOUT"`
     }
     func NewEnv() *Env {
       env := Env{}

@@ -2,9 +2,9 @@ package domain
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"os"
 	"strings"
-	"gopkg.in/yaml.v3"
 )
 
 func LoadAllTemplates(dir string) ([]Template, error) {

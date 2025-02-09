@@ -2,9 +2,9 @@ package domain
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
-	"gopkg.in/yaml.v3"
 )
 
 func CreateFolder(parentPath string, folders interface{}) error {
@@ -39,8 +39,8 @@ func CreateFolder(parentPath string, folders interface{}) error {
 	}
 	return nil
 }
-func CreateBoilerPlates(project *Project) error{
-boilerPlateFilePath := filepath.Join("templates", "initial_structure.yaml")
+func CreateBoilerPlates(project *Project) error {
+	boilerPlateFilePath := filepath.Join("templates", "initial_structure.yaml")
 	data, err := os.ReadFile(boilerPlateFilePath)
 	projectRoot := filepath.Join(project.Path, project.Name)
 	if err != nil {
@@ -52,22 +52,20 @@ boilerPlateFilePath := filepath.Join("templates", "initial_structure.yaml")
 		return fmt.Errorf("❌ Error unmarshalling boiler plates: %v", err)
 	}
 	for _, file := range boilerPlates {
-		
+
 		content := []byte(file.Content)
 		var filePath string
-		if(file.Directory == "root"){
+		if file.Directory == "root" {
 			filePath = filepath.Join(project.Path, file.Name)
-		}else{
+		} else {
 			filePath = filepath.Join(projectRoot, file.Name)
 		}
-		
+
 		if err := os.WriteFile(filePath, content, 0644); err != nil {
-			return fmt.Errorf("❌ Error writing file %s:%v", file.Name,err)
+			return fmt.Errorf("❌ Error writing file %s:%v", file.Name, err)
 		}
 		fmt.Println("✅ ", file.Name, "created successfully at", filePath)
 
 	}
 	return nil
 }
-
-

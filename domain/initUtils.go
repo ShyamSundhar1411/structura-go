@@ -12,7 +12,7 @@ import (
 )
 
 func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
-	orderedFlags := []string{"name", "path", "description", "architecture","env","readme"}
+	orderedFlags := []string{"name", "path", "description", "architecture", "env", "readme"}
 	attributes := map[string]Attribute{
 		"name": {
 			Field: &project.Name,
@@ -30,11 +30,11 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 			Field: &project.Architecture,
 			Label: "Project Architecture",
 		},
-		"env" :{
+		"env": {
 			Field: &project.GenerateEnv,
 			Label: "Do you want to generate .env? [y/n]",
 		},
-		"readme":{
+		"readme": {
 			Field: &project.GenerateReadME,
 			Label: "Do you want to generate README.md ? [y/n]",
 		},
@@ -75,8 +75,8 @@ func CreateArchitectureStructure(project *Project) {
 		fmt.Println("⚠️ Error creating project root:", err)
 		return
 	}
-	
-	if err := CreateBoilerPlates(project); err !=nil{
+
+	if err := CreateBoilerPlates(project); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -95,20 +95,20 @@ func CreateArchitectureStructure(project *Project) {
 	fmt.Println("✅ Folder structure created successfully at", projectRoot)
 
 }
-func LoadTemplateFromArchitecture(dir string, architecture string)(*Template, error){
-	filePath := dir+"/"+strings.ToLower(architecture)+".yaml"
+func LoadTemplateFromArchitecture(dir string, architecture string) (*Template, error) {
+	filePath := dir + "/" + strings.ToLower(architecture) + ".yaml"
 	data, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Println("⚠️ Error reading:", filePath)
-		return nil,err
+		return nil, err
 	}
 	var template Template
 	err = yaml.Unmarshal(data, &template)
 	if err != nil {
 		fmt.Println("⚠️ Error unmarshalling:", filePath)
-		return nil,err
+		return nil, err
 	}
-	return &template, nil	
+	return &template, nil
 }
 
 func runGoModInit(projectRoot, moduleName string) error {
@@ -119,8 +119,8 @@ func runGoModInit(projectRoot, moduleName string) error {
 	return cmd.Run()
 }
 
-func installDependencyPackages(projectRoot string)error{
-	cmd := exec.Command("go","get","github.com/spf13/viper")
+func installDependencyPackages(projectRoot string) error {
+	cmd := exec.Command("go", "get", "github.com/spf13/viper")
 	cmd.Dir = projectRoot
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
