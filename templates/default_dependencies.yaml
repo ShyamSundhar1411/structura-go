@@ -1,0 +1,24 @@
+- name: "viper"
+  source: "github.com/spf13/viper"
+  description: "A Go configuration management library"
+  version: "v1.10.0"
+
+- name: "gin"
+  source: "github.com/gin-gonic/gin"
+  description: "A web framework for Go"
+  version: "v1.8.1"
+
+- name: "logrus"
+  source: "github.com/sirupsen/logrus"
+  description: "Structured logger for Go"
+  version: "v1.8.1"
+
+- name: "echo"
+  source: "github.com/labstack/echo/v4"
+  description: "High performance, extensible web framework for Go"
+  version: "v4.6.0"
+
+- name: "fiber"
+  source: "github.com/gofiber/fiber/v2"
+  description: "An Express.js inspired web framework for Go"
+  version: "v2.34.0"
