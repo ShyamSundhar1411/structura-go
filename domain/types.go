@@ -7,6 +7,7 @@ type Project struct {
 	Architecture   string
 	GenerateEnv    string
 	GenerateReadME string
+	Dependencies   []string
 }
 
 type Attribute struct {
@@ -24,4 +25,11 @@ type BoilerPlate struct {
 	Directory   string `yaml:"directory"`
 	Description string `yaml:"description"`
 	Content     string `yaml:"content"`
+}
+
+type Dependency struct {
+	Name        string `yaml:"name"`
+	Source      string `yaml:"source"`
+	Description string `yaml:"description"`
+	version     string `yaml:"version"`
 }

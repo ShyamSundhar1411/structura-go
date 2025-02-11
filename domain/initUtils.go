@@ -45,6 +45,7 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 		"description":  "A new Go project",
 		"architecture": "MVC",
 	}
+	dependencies := []string{}
 	architectureOptions := []string{"MVC", "MVC-API", "MVCS", "Hexagonal"}
 	for _, flag := range orderedFlags {
 		attr := attributes[flag]
@@ -55,11 +56,14 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 			if flag == "architecture" {
 				*attr.Field = SelectPrompt(attr.Label, architectureOptions)
 			} else {
-
 				*attr.Field = InteractivePrompt(attr.Label, defaults[flag])
+				if flag == "env" {
+					dependencies = append(dependencies, "viper")
+				}
 			}
 		}
 	}
+	project.Dependencies = dependencies
 	return project
 }
 
@@ -84,7 +88,7 @@ func CreateArchitectureStructure(project *Project) {
 		fmt.Println("⚠️ Error initializing Go module:", err)
 		return
 	}
-	if err := installDependencyPackages(project.Path); err != nil {
+	if err := installDependencyPackages(project.Path,project.Dependencies); err != nil {
 		fmt.Println("⚠️ Error installing dependency packages:", err)
 		return
 	}
@@ -119,8 +123,9 @@ func runGoModInit(projectRoot, moduleName string) error {
 	return cmd.Run()
 }
 
-func installDependencyPackages(projectRoot string) error {
-	cmd := exec.Command("go", "get", "github.com/spf13/viper")
+func installDependencyPackages(projectRoot string, dependencies []string) error {
+	fmt.Println(dependencies)
+	cmd := exec.Command("go", "get","github.com/spf13/viper")
 	cmd.Dir = projectRoot
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
