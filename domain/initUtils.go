@@ -122,9 +122,41 @@ func runGoModInit(projectRoot, moduleName string) error {
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
 }
-
-func installDependencyPackages(projectRoot string, dependencies []string) error {
-	fmt.Println(dependencies)
+func LoadDependencies(filePath string) ([]Dependency, error) {
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Println("⚠️ Error reading:", filePath)
+		return nil, err
+	}
+	var dependencies []Dependency
+	err = yaml.Unmarshal(data, &dependencies)
+	if err != nil {
+		fmt.Println("⚠️ Error unmarshalling:", filePath)
+		return nil, err
+	}
+	return dependencies, nil
+}
+func GetDependencySource(dependencies []Dependency, name string) (string, error) {
+	for _, dep := range dependencies {
+		if dep.Name == name {
+			return dep.Source, nil
+		}
+	}
+	return "", fmt.Errorf("❌ Dependency '%s' not found", name)
+}
+func installDependencyPackages(projectRoot string, Stringdependencies []string) error {
+	filePath := "./templates/default_dependencies.yaml"
+	dependencies, err := LoadDependencies(filePath)
+	if err != nil {
+		return fmt.Errorf("⚠️ Error loading dependencies: %v", err)
+	}
+	for _,dep := range Stringdependencies{
+		source, err := GetDependencySource(dependencies, dep)
+		if err !=nil{
+			return err
+		}
+		fmt.Println(source)
+	}
 	cmd := exec.Command("go", "get","github.com/spf13/viper")
 	cmd.Dir = projectRoot
 	cmd.Stdout = os.Stdout
