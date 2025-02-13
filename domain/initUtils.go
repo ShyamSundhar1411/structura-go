@@ -59,6 +59,7 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 				*attr.Field = InteractivePrompt(attr.Label, defaults[flag])
 				if flag == "env" {
 					dependencies = append(dependencies, "viper")
+					dependencies = append(dependencies, "gin")
 				}
 			}
 		}
@@ -144,22 +145,28 @@ func GetDependencySource(dependencies []Dependency, name string) (string, error)
 	}
 	return "", fmt.Errorf("❌ Dependency '%s' not found", name)
 }
-func installDependencyPackages(projectRoot string, Stringdependencies []string) error {
+func installDependencyPackages(projectRoot string, stringDependencies []string) error {
 	filePath := "./templates/default_dependencies.yaml"
 	dependencies, err := LoadDependencies(filePath)
 	if err != nil {
 		return fmt.Errorf("⚠️ Error loading dependencies: %v", err)
 	}
-	for _,dep := range Stringdependencies{
+
+	for _, dep := range stringDependencies {
 		source, err := GetDependencySource(dependencies, dep)
-		if err !=nil{
-			return err
+		if err != nil {
+			return fmt.Errorf("⚠️ Error resolving dependency %s: %v", dep, err)
 		}
-		fmt.Println(source)
+		fmt.Println("Installing:", source)
+
+		cmd := exec.Command("go", "get", source)
+		cmd.Dir = projectRoot
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("⚠️ Failed to install dependency %s: %v", source, err)
+		}
 	}
-	cmd := exec.Command("go", "get","github.com/spf13/viper")
-	cmd.Dir = projectRoot
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
+
+	return nil
 }
