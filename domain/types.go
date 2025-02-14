@@ -13,6 +13,8 @@ type Project struct {
 type Attribute struct {
 	Field *string
 	Label string
+	Type string
+	Options interface{}
 }
 type Template struct {
 	Name        string      `yaml:"name"`

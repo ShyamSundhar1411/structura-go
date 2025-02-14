@@ -12,31 +12,41 @@ import (
 )
 
 func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
-	orderedFlags := []string{"name", "path", "description", "architecture", "env", "readme"}
+	orderedFlags := []string{"name", "path", "description", "architecture", "env", "server"}
+	var server string
 	attributes := map[string]Attribute{
 		"name": {
 			Field: &project.Name,
 			Label: "Project Name",
+			Type: "Prompt",
 		},
 		"path": {
 			Field: &project.Path,
 			Label: "Project Path",
+			Type: "Prompt",
 		},
 		"description": {
 			Field: &project.Description,
 			Label: "Project Description",
+			Type: "Prompt",
 		},
 		"architecture": {
 			Field: &project.Architecture,
 			Label: "Project Architecture",
+			Type: "Select",
+			Options: []string{"MVC", "MVC-API", "MVCS", "Hexagonal"},
 		},
 		"env": {
 			Field: &project.GenerateEnv,
 			Label: "Do you want to generate .env? [y/n]",
+			Type: "Prompt",
 		},
-		"readme": {
-			Field: &project.GenerateReadME,
-			Label: "Do you want to generate README.md ? [y/n]",
+		
+		"server":{
+			Field: &server,
+			Label: "Project Server",
+			Type: "Select",
+			Options: []string{"gin", "fiber", "echo", "chi", "none"},
 		},
 	}
 	defaults := map[string]string{
@@ -46,20 +56,28 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 		"architecture": "MVC",
 	}
 	dependencies := []string{}
-	architectureOptions := []string{"MVC", "MVC-API", "MVCS", "Hexagonal"}
 	for _, flag := range orderedFlags {
 		attr := attributes[flag]
 		if cmd.Flags().Changed(flag) {
 			value, _ := cmd.Flags().GetString(flag)
 			*attr.Field = value
 		} else {
-			if flag == "architecture" {
-				*attr.Field = SelectPrompt(attr.Label, architectureOptions)
+			if attr.Type == "Select" {
+				options, ok := attr.Options.([]string)
+				if !ok {
+					fmt.Println("Error: Options is not of type []string")
+					os.Exit(1)
+				}
+				*attr.Field = SelectPrompt(attr.Label, options)
+				fmt.Println(server)
+				if flag == "server"{
+					dependencies = append(dependencies, server)
+				}
 			} else {
 				*attr.Field = InteractivePrompt(attr.Label, defaults[flag])
 				if flag == "env" {
 					dependencies = append(dependencies, "viper")
-					dependencies = append(dependencies, "gin")
+					
 				}
 			}
 		}

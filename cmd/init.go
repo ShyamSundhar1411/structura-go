@@ -50,4 +50,5 @@ func init() {
 	initCmd.Flags().StringP("description", "d", "", "Description of the project")
 	initCmd.Flags().StringP("architecture", "a", "", "Architecture to use (MVC, MVCS, etc.)")
 	initCmd.Flags().StringP("env", "e", "", "Include Env file")
+	initCmd.Flags().StringP("server", "s", "", "Project Server")
 }
