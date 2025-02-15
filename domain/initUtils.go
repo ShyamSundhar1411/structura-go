@@ -12,42 +12,57 @@ import (
 )
 
 func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
-	orderedFlags := []string{"name", "path", "description", "architecture", "env", "server"}
+	orderedFlags := []string{"name", "path", "description", "architecture", "env","generate_server","server"}
+	var generateServer string
 	var server string
 	attributes := map[string]Attribute{
 		"name": {
 			Field: &project.Name,
 			Label: "Project Name",
 			Type: "Prompt",
+			Condition: nil,
 		},
 		"path": {
 			Field: &project.Path,
 			Label: "Project Path",
 			Type: "Prompt",
+			Condition: nil,
 		},
 		"description": {
 			Field: &project.Description,
 			Label: "Project Description",
 			Type: "Prompt",
+			Condition: nil,
 		},
 		"architecture": {
 			Field: &project.Architecture,
 			Label: "Project Architecture",
 			Type: "Select",
 			Options: []string{"MVC", "MVC-API", "MVCS", "Hexagonal"},
+			Condition: nil,
 		},
 		"env": {
 			Field: &project.GenerateEnv,
 			Label: "Do you want to generate .env? [y/n]",
 			Type: "Prompt",
+			Condition: nil,
 		},
-		
-		"server":{
+		"generate_server":{
+			Field: &generateServer,
+			Label: "Do you want to generate server? [y/n]",
+			Type: "Prompt",
+			Condition: nil,
+		},
+		"server": {
 			Field: &server,
-			Label: "Project Server",
+			Label: "Choose the server framework",
 			Type: "Select",
 			Options: []string{"gin", "fiber", "echo", "chi", "none"},
+			Condition: func() bool {
+				return generateServer == "y"
+			},
 		},
+
 	}
 	defaults := map[string]string{
 		"name":         "cmd",
@@ -68,17 +83,22 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 					fmt.Println("Error: Options is not of type []string")
 					os.Exit(1)
 				}
-				*attr.Field = SelectPrompt(attr.Label, options)
-				fmt.Println(server)
-				if flag == "server"{
+				if attr.Condition == nil {
+					*attr.Field = SelectPrompt(attr.Label, options)
+				}
+				if attr.Condition != nil && attr.Condition() {
+					*attr.Field = SelectPrompt(attr.Label, options)
 					dependencies = append(dependencies, server)
 				}
+				
+				
 			} else {
 				*attr.Field = InteractivePrompt(attr.Label, defaults[flag])
 				if flag == "env" {
 					dependencies = append(dependencies, "viper")
 					
 				}
+				
 			}
 		}
 	}

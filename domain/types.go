@@ -15,6 +15,7 @@ type Attribute struct {
 	Label string
 	Type string
 	Options interface{}
+	Condition func() bool
 }
 type Template struct {
 	Name        string      `yaml:"name"`
