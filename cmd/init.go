@@ -46,6 +46,7 @@ func init() {
 	// is called directly, e.g.:
 	// initCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	initCmd.Flags().StringP("name", "n", "", "Name of the project")
+	initCmd.Flags().StringP("package-name","","","Package Name")
 	initCmd.Flags().StringP("path", "p", "", "Path to initialize the project")
 	initCmd.Flags().StringP("description", "d", "", "Description of the project")
 	initCmd.Flags().StringP("architecture", "a", "", "Architecture to use (MVC, MVCS, etc.)")

@@ -3,10 +3,9 @@ package domain
 type Project struct {
 	Name           string
 	Path           string
+	PackageName	   string
 	Description    string
 	Architecture   string
-	GenerateEnv    string
-	GenerateReadME string
 	Dependencies   []string
 }
 
@@ -16,6 +15,7 @@ type Attribute struct {
 	Type string
 	Options interface{}
 	Condition func() bool
+	DefaultValue string
 }
 type Template struct {
 	Name        string      `yaml:"name"`

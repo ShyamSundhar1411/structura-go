@@ -10,101 +10,110 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )
-
-func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
-	orderedFlags := []string{"name", "path", "description", "architecture", "env","generate_server","server"}
-	var generateServer string
-	var server string
-	attributes := map[string]Attribute{
-		"name": {
-			Field: &project.Name,
-			Label: "Project Name",
-			Type: "Prompt",
-			Condition: nil,
-		},
-		"path": {
-			Field: &project.Path,
-			Label: "Project Path",
-			Type: "Prompt",
-			Condition: nil,
-		},
-		"description": {
-			Field: &project.Description,
-			Label: "Project Description",
-			Type: "Prompt",
-			Condition: nil,
-		},
-		"architecture": {
-			Field: &project.Architecture,
-			Label: "Project Architecture",
-			Type: "Select",
-			Options: []string{"MVC", "MVC-API", "MVCS", "Hexagonal"},
-			Condition: nil,
-		},
-		"env": {
-			Field: &project.GenerateEnv,
-			Label: "Do you want to generate .env? [y/n]",
-			Type: "Prompt",
-			Condition: nil,
-		},
-		"generate_server":{
-			Field: &generateServer,
-			Label: "Do you want to generate server? [y/n]",
-			Type: "Prompt",
-			Condition: nil,
-		},
-		"server": {
-			Field: &server,
-			Label: "Choose the server framework",
-			Type: "Select",
-			Options: []string{"gin", "fiber", "echo", "chi", "none"},
-			Condition: func() bool {
-				return generateServer == "y"
-			},
-		},
-
+func GetGitHubUsername() string {
+	cmd := exec.Command("git", "config", "--global", "user.name")
+	output, err := cmd.Output()
+	if err != nil {
+		return ""
 	}
-	defaults := map[string]string{
-		"name":         "cmd",
-		"path":         "./",
-		"description":  "A new Go project",
-		"architecture": "MVC",
-	}
-	dependencies := []string{}
-	for _, flag := range orderedFlags {
-		attr := attributes[flag]
-		if cmd.Flags().Changed(flag) {
-			value, _ := cmd.Flags().GetString(flag)
-			*attr.Field = value
-		} else {
-			if attr.Type == "Select" {
-				options, ok := attr.Options.([]string)
-				if !ok {
-					fmt.Println("Error: Options is not of type []string")
-					os.Exit(1)
-				}
-				if attr.Condition == nil {
-					*attr.Field = SelectPrompt(attr.Label, options)
-				}
-				if attr.Condition != nil && attr.Condition() {
-					*attr.Field = SelectPrompt(attr.Label, options)
-					dependencies = append(dependencies, server)
-				}
-				
-				
-			} else {
-				*attr.Field = InteractivePrompt(attr.Label, defaults[flag])
-				if flag == "env" {
-					dependencies = append(dependencies, "viper")
-					
-				}
-				
-			}
-		}
-	}
-	project.Dependencies = dependencies
-	return project
+	return strings.TrimSpace(string(output))
 }
+
+func GetDefaultPackageName() string {
+	username := GetGitHubUsername()
+	if username == "" {
+		return ""
+	}
+	return fmt.Sprintf("github.com/%s", username)
+}
+func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
+    orderedFlags := []string{"name", "package-name", "path", "description", "architecture", "env", "generate-server", "server"}
+    var generateServer, server,generateEnv string
+    dependencies := []string{}
+
+    attributes := map[string]Attribute{
+        "name": {
+            Field:        &project.Name,
+            Label:        "Project Name",
+            Type:         "Prompt",
+            DefaultValue: "cmd",
+        },
+        "package-name": {
+            Field:        &project.PackageName,
+            Label:        "Project Package Name",
+            Type:         "Prompt",
+            DefaultValue: GetDefaultPackageName(),
+        },
+        "path": {
+            Field:        &project.Path,
+            Label:        "Project Path",
+            Type:         "Prompt",
+            DefaultValue: "./",
+        },
+        "description": {
+            Field:        &project.Description,
+            Label:        "Project Description",
+            Type:         "Prompt",
+            DefaultValue: "A new Go project",
+        },
+        "architecture": {
+            Field:        &project.Architecture,
+            Label:        "Project Architecture",
+            Type:         "Select",
+            Options:      []string{"MVC", "MVC-API", "MVCS", "Hexagonal"},
+            DefaultValue: "MVC",
+        },
+        "env": {
+            Field:        &generateEnv,
+            Label:        "Do you want to generate .env? [y/n]",
+            Type:         "Prompt",
+            DefaultValue: "n",
+        },
+        "generate-server": {
+            Field:        &generateServer,
+            Label:        "Do you want to generate a server? [y/n]",
+            Type:         "Prompt",
+            DefaultValue: "n",
+        },
+        "server": {
+            Field:        &server,
+            Label:        "Choose the server framework",
+            Type:         "Select",
+            Options:      []string{"gin", "fiber", "echo", "chi", "none"},
+            DefaultValue: "none",
+            Condition: func() bool {
+                return generateServer == "y"
+            },
+        },
+    }
+
+    for _, flag := range orderedFlags {
+        attr := attributes[flag]
+
+        if cmd.Flags().Changed(flag) {
+            value, _ := cmd.Flags().GetString(flag)
+            *attr.Field = value
+        } else {
+            if attr.Type == "Select" && (attr.Condition == nil || attr.Condition()) {
+                *attr.Field = SelectPrompt(attr.Label, attr.Options.([]string))
+            } else if attr.Type == "Prompt" {
+                *attr.Field = InteractivePrompt(attr.Label, attr.DefaultValue)
+            }
+        }
+
+        if flag == "env" && generateEnv == "y"{
+            dependencies = append(dependencies, "viper","logrus")
+        }
+        if flag == "server" && generateServer == "y" {
+            dependencies = append(dependencies, server)
+        }
+    }
+
+    project.PackageName = GetDefaultPackageName() + "/" + project.Name
+    project.Dependencies = dependencies
+    return project
+}
+
 
 func CreateArchitectureStructure(project *Project) {
 	architecture := strings.ToLower(project.Architecture)
@@ -123,7 +132,7 @@ func CreateArchitectureStructure(project *Project) {
 		fmt.Println(err)
 		return
 	}
-	if err := runGoModInit(project.Path, project.Name); err != nil {
+	if err := runGoModInit(project.Path, project.PackageName); err != nil {
 		fmt.Println("⚠️ Error initializing Go module:", err)
 		return
 	}
@@ -194,6 +203,7 @@ func installDependencyPackages(projectRoot string, stringDependencies []string) 
 		source, err := GetDependencySource(dependencies, dep)
 		if err != nil {
 			return fmt.Errorf("⚠️ Error resolving dependency %s: %v", dep, err)
+			
 		}
 		fmt.Println("Installing:", source)
 

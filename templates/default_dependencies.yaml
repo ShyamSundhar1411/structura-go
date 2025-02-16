@@ -3,8 +3,6 @@
   description: "A Go configuration management library"
   version: "v1.10.0"
 
-
-
 - name: "logrus"
   source: "github.com/sirupsen/logrus"
   description: "Structured logger for Go"
