@@ -3,4 +3,6 @@ description: "MVC pattern for API-only projects. This architecture provides a cl
 folders:
   - controllers   # Contains your controllers which handle API requests and responses
   - models        # Contains the data models for interacting with the database
-  - routes        # Defines the routes/endpoints for the API
+  - routes
+  - tests
+  - utils        # Defines the routes/endpoints for the API

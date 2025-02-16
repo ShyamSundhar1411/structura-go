@@ -4,4 +4,7 @@ folders:
   - controllers   # Contains all your controllers (e.g., logic for handling requests)
   - models        # Contains your data models (e.g., struct definitions, database interaction)
   - views         # Contains the templates used to render HTML pages (e.g., user interface templates)
-  - routes        # Contains route definitions to map HTTP requests to controllers
+  - routes
+  - tests
+  
+          # Contains route definitions to map HTTP requests to controllers

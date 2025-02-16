@@ -4,4 +4,5 @@ folders:
   - controllers   # Contains controllers which handle HTTP requests and responses
   - models        # Contains the data models for interacting with the database
   - routes        # Defines the routes/endpoints for the API
-  - services      # Contains business logic and services used by the controllers
+  - services
+  - utils      # Contains business logic and services used by the controllers

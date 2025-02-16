@@ -5,7 +5,10 @@ folders:
     adapters:
       - handler
       - repository
+      - tests
     core:
       - domain
       - ports
       - services
+      - tests
+      - utils

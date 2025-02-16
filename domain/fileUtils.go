@@ -2,9 +2,9 @@ package domain
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
+	"gopkg.in/yaml.v3"
 )
 
 func CreateFolder(parentPath string, folders interface{}) error {

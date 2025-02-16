@@ -1,0 +1,4 @@
+name: "gin"
+source: "github.com/gin-gonic/gin"
+description: "A web framework for Go"
+version: "v1.8.1"

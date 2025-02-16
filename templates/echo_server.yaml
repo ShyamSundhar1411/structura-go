@@ -1,0 +1,4 @@
+name: "echo"
+source: "github.com/labstack/echo/v4"
+description: "High performance, extensible web framework for Go"
+version: "v4.6.0"

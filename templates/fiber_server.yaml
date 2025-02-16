@@ -1,0 +1,4 @@
+name: "fiber"
+source: "github.com/gofiber/fiber/v2"
+description: "An Express.js inspired web framework for Go"
+version: "v2.34.0"
