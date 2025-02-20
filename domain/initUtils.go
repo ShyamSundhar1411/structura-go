@@ -130,22 +130,20 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
         }
 
         if flag == "env" && generateEnv == "y"{
-            filePath := "./templates/default_dependencies.yaml"
+            filePath := filepath.Join(".", "templates", "default_dependencies.yaml")
 			defaultDependencies, err := LoadDependencies(filePath)
 			if err != nil {
 				fmt.Println("⚠️ Error loading default dependencies:", err)
-				os.Exit(1)
 			}
 			for _, dependency := range defaultDependencies {
 				dependencies = append(dependencies, dependency)
 			}
         }
         if flag == "server" && generateServer == "y" {
-            filepath := "./templates/"+server+"_server.yaml"
-			serverDependency, err := LoadDependency(filepath)
+            filePath := filepath.Join(".", "templates", server+"_server.yaml")
+			serverDependency, err := LoadDependency(filePath)
 			if err != nil {
 				fmt.Println("⚠️ Error loading server dependencies:", err)
-				os.Exit(1)
 			}
 			dependencies = append(dependencies, serverDependency)
         }
@@ -159,10 +157,10 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 
 func CreateArchitectureStructure(project *Project) {
 	architecture := strings.ToLower(project.Architecture)
-	template, err := LoadTemplateFromArchitecture("./templates", architecture)
+	template, err := LoadTemplateFromArchitecture(filepath.Join(".", "templates"), architecture)
 	if err != nil {
 		fmt.Println("⚠️ Error loading template:", err)
-		os.Exit(1)
+		return 
 	}
 	projectRoot := filepath.Join(project.Path, project.Name)
 	if err := os.MkdirAll(projectRoot, 0755); err != nil {
@@ -190,7 +188,7 @@ func CreateArchitectureStructure(project *Project) {
 
 }
 func LoadTemplateFromArchitecture(dir string, architecture string) (*Template, error) {
-	filePath := dir + "/" + strings.ToLower(architecture) + ".yaml"
+	filePath := filepath.Join(dir, strings.ToLower(architecture)+".yaml")
 	data, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Println("⚠️ Error reading:", filePath)
