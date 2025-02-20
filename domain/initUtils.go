@@ -26,10 +26,38 @@ func GetDefaultPackageName() string {
 	}
 	return fmt.Sprintf("github.com/%s", username)
 }
+func LoadDependencies(filePath string) ([]Dependency, error) {
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Println("⚠️ Error reading:", filePath)
+		return nil, err
+	}
+	var dependencies []Dependency
+	err = yaml.Unmarshal(data, &dependencies)
+	if err != nil {
+		fmt.Println("⚠️ Error unmarshalling:", filePath)
+		return nil, err
+	}
+	return dependencies, nil
+}
+func LoadDependency(filePath string)(Dependency, error){
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Println("⚠️ Error reading:", filePath)
+		return Dependency{}, err
+	}
+	var dependency Dependency
+	err = yaml.Unmarshal(data, &dependency)
+	if err != nil {
+		fmt.Println("⚠️ Error unmarshalling:", filePath)
+		return Dependency{}, err
+	}
+	return dependency, nil
+}
 func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
     orderedFlags := []string{"name", "package-name", "path", "description", "architecture", "env", "generate-server", "server"}
     var generateServer, server,generateEnv string
-    dependencies := []string{}
+    var dependencies []Dependency
 
     attributes := map[string]Attribute{
         "name": {
@@ -102,10 +130,24 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
         }
 
         if flag == "env" && generateEnv == "y"{
-            dependencies = append(dependencies, "viper","logrus")
+            filePath := "./templates/default_dependencies.yaml"
+			defaultDependencies, err := LoadDependencies(filePath)
+			if err != nil {
+				fmt.Println("⚠️ Error loading default dependencies:", err)
+				os.Exit(1)
+			}
+			for _, dependency := range defaultDependencies {
+				dependencies = append(dependencies, dependency)
+			}
         }
         if flag == "server" && generateServer == "y" {
-            dependencies = append(dependencies, server)
+            filepath := "./templates/"+server+"_server.yaml"
+			serverDependency, err := LoadDependency(filepath)
+			if err != nil {
+				fmt.Println("⚠️ Error loading server dependencies:", err)
+				os.Exit(1)
+			}
+			dependencies = append(dependencies, serverDependency)
         }
     }
 
@@ -170,51 +212,17 @@ func runGoModInit(projectRoot, moduleName string) error {
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
 }
-func LoadDependencies(filePath string) ([]Dependency, error) {
-	data, err := os.ReadFile(filePath)
-	if err != nil {
-		fmt.Println("⚠️ Error reading:", filePath)
-		return nil, err
-	}
-	var dependencies []Dependency
-	err = yaml.Unmarshal(data, &dependencies)
-	if err != nil {
-		fmt.Println("⚠️ Error unmarshalling:", filePath)
-		return nil, err
-	}
-	return dependencies, nil
-}
-func GetDependencySource(dependencies []Dependency, name string) (string, error) {
-	for _, dep := range dependencies {
-		if dep.Name == name {
-			return dep.Source, nil
-		}
-	}
-	return "", fmt.Errorf("❌ Dependency '%s' not found", name)
-}
-func installDependencyPackages(projectRoot string, stringDependencies []string) error {
-	filePath := "./templates/default_dependencies.yaml"
-	dependencies, err := LoadDependencies(filePath)
-	if err != nil {
-		return fmt.Errorf("⚠️ Error loading dependencies: %v", err)
-	}
 
-	for _, dep := range stringDependencies {
-		source, err := GetDependencySource(dependencies, dep)
-		if err != nil {
-			return fmt.Errorf("⚠️ Error resolving dependency %s: %v", dep, err)
-			
-		}
-		fmt.Println("Installing:", source)
 
-		cmd := exec.Command("go", "get", source)
+func installDependencyPackages(projectRoot string, dependencies []Dependency) error {
+	for _, dependency := range dependencies {
+		cmd := exec.Command("go", "get", dependency.Source)
 		cmd.Dir = projectRoot
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
-			return fmt.Errorf("⚠️ Failed to install dependency %s: %v", source, err)
+			return fmt.Errorf("⚠️ Failed to install dependency %s: %v", dependency.Source, err)
 		}
 	}
-
 	return nil
 }

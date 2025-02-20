@@ -6,9 +6,8 @@ type Project struct {
 	PackageName	   string
 	Description    string
 	Architecture   string
-	Dependencies   []string
+	Dependencies   []Dependency
 }
-
 type Attribute struct {
 	Field *string
 	Label string
@@ -35,4 +34,5 @@ type Dependency struct {
 	Source      string `yaml:"source"`
 	Description string `yaml:"description"`
 	version     string `yaml:"version"`
+	content		string `yaml:"content"`
 }
