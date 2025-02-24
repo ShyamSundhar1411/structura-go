@@ -28,11 +28,14 @@ type BoilerPlate struct {
 	Description string `yaml:"description"`
 	Content     string `yaml:"content"`
 }
+type FileContent struct {
+    Files map[string]string `yaml:",inline"`
+}
 
 type Dependency struct {
-	Name        string `yaml:"name"`
-	Source      string `yaml:"source"`
-	Description string `yaml:"description"`
-	version     string `yaml:"version"`
-	content		string `yaml:"content"`
+    Name        string                 `yaml:"name"`
+    Source      string                 `yaml:"source"`
+    Description string                 `yaml:"description"`
+    Version     string                 `yaml:"version"`
+    Content     map[string]FileContent `yaml:"content,omitempty"`
 }

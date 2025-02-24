@@ -2,7 +2,81 @@
   source: "github.com/spf13/viper"
   description: "A Go configuration management library"
   version: "v1.10.0"
-  content: null
+  content:
+    root:
+      .env: |
+        # .env file sample
+
+        DB_HOST=localhost
+        DB_PORT=5432
+        DB_USER=username
+        DB_PASSWORD=password
+        DB_NAME=mydatabase
+
+        # API keys
+        API_KEY=your_api_key_here
+        SECRET_KEY=your_secret_key_here
+
+        # Application settings
+        DEBUG=true
+        LOG_LEVEL=info
+
+        # Email service configuration
+        SMTP_HOST=smtp.example.com
+        SMTP_PORT=587
+        SMTP_USER=email@example.com
+        SMTP_PASSWORD=emailpassword
+
+        # External service URLs
+        REDIS_URL=redis://localhost:6379
+        CACHE_TIMEOUT=300
+
+    bootstrap:
+      env.go: |
+        package bootstrap
+        import (
+            "log"
+
+            "github.com/spf13/viper"
+          )
+        type Env struct {
+          DBHost     string `mapstructure:"DB_HOST"`
+          DBPort     int    `mapstructure:"DB_PORT"`
+          DBUser     string `mapstructure:"DB_USER"`
+          DBPassword string `mapstructure:"DB_PASSWORD"`
+          DBName     string `mapstructure:"DB_NAME"`
+
+          APIKey    string `mapstructure:"API_KEY"`
+          SecretKey string `mapstructure:"SECRET_KEY"`
+
+          Debug     bool   `mapstructure:"DEBUG"`
+          LogLevel  string `mapstructure:"LOG_LEVEL"`
+
+          SMTPHost  string `mapstructure:"SMTP_HOST"`
+          SMTPPort  int    `mapstructure:"SMTP_PORT"`
+          SMTPUser  string `mapstructure:"SMTP_USER"`
+          SMTPPass  string `mapstructure:"SMTP_PASSWORD"`
+
+          RedisURL     string `mapstructure:"REDIS_URL"`
+          CacheTimeout int    `mapstructure:"CACHE_TIMEOUT"`
+        }
+        func NewEnv() *Env {
+          env := Env{}
+          viper.SetConfigFile(".env")
+          err := viper.ReadInConfig()
+          if err != nil {
+            log.Fatal("Unable to load environment file :", err)
+          }
+          err = viper.Unmarshal(&env)
+          if err != nil {
+            log.Fatal("Unable to decode into struct :", err)
+          }
+          if env.AppEnv == "development" {
+            log.Println("The App is running in development env")
+          }
+          return &env
+        }
+
 - name: "logrus"
   source: "github.com/sirupsen/logrus"
   description: "Structured logger for Go"

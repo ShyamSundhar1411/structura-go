@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )
+
 func GetGitHubUsername() string {
 	cmd := exec.Command("git", "config", "--global", "user.name")
 	output, err := cmd.Output()
@@ -40,7 +41,7 @@ func LoadDependencies(filePath string) ([]Dependency, error) {
 	}
 	return dependencies, nil
 }
-func LoadDependency(filePath string)(Dependency, error){
+func LoadDependency(filePath string) (Dependency, error) {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Println("⚠️ Error reading:", filePath)
@@ -55,82 +56,82 @@ func LoadDependency(filePath string)(Dependency, error){
 	return dependency, nil
 }
 func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
-    orderedFlags := []string{"name", "package-name", "path", "description", "architecture", "env", "generate-server", "server"}
-    var generateServer, server,generateEnv string
-    var dependencies []Dependency
+	orderedFlags := []string{"name", "package-name", "path", "description", "architecture", "env", "generate-server", "server"}
+	var generateServer, server, generateEnv string
+	var dependencies []Dependency
 
-    attributes := map[string]Attribute{
-        "name": {
-            Field:        &project.Name,
-            Label:        "Project Name",
-            Type:         "Prompt",
-            DefaultValue: "cmd",
-        },
-        "package-name": {
-            Field:        &project.PackageName,
-            Label:        "Project Package Name",
-            Type:         "Prompt",
-            DefaultValue: GetDefaultPackageName(),
-        },
-        "path": {
-            Field:        &project.Path,
-            Label:        "Project Path",
-            Type:         "Prompt",
-            DefaultValue: "./",
-        },
-        "description": {
-            Field:        &project.Description,
-            Label:        "Project Description",
-            Type:         "Prompt",
-            DefaultValue: "A new Go project",
-        },
-        "architecture": {
-            Field:        &project.Architecture,
-            Label:        "Project Architecture",
-            Type:         "Select",
-            Options:      []string{"MVC", "MVC-API", "MVCS", "Hexagonal"},
-            DefaultValue: "MVC",
-        },
-        "env": {
-            Field:        &generateEnv,
-            Label:        "Do you want to generate .env? [y/n]",
-            Type:         "Prompt",
-            DefaultValue: "n",
-        },
-        "generate-server": {
-            Field:        &generateServer,
-            Label:        "Do you want to generate a server? [y/n]",
-            Type:         "Prompt",
-            DefaultValue: "n",
-        },
-        "server": {
-            Field:        &server,
-            Label:        "Choose the server framework",
-            Type:         "Select",
-            Options:      []string{"gin", "fiber", "echo", "chi", "none"},
-            DefaultValue: "none",
-            Condition: func() bool {
-                return generateServer == "y"
-            },
-        },
-    }
+	attributes := map[string]Attribute{
+		"name": {
+			Field:        &project.Name,
+			Label:        "Project Name",
+			Type:         "Prompt",
+			DefaultValue: "cmd",
+		},
+		"package-name": {
+			Field:        &project.PackageName,
+			Label:        "Project Package Name",
+			Type:         "Prompt",
+			DefaultValue: GetDefaultPackageName(),
+		},
+		"path": {
+			Field:        &project.Path,
+			Label:        "Project Path",
+			Type:         "Prompt",
+			DefaultValue: "./",
+		},
+		"description": {
+			Field:        &project.Description,
+			Label:        "Project Description",
+			Type:         "Prompt",
+			DefaultValue: "A new Go project",
+		},
+		"architecture": {
+			Field:        &project.Architecture,
+			Label:        "Project Architecture",
+			Type:         "Select",
+			Options:      []string{"MVC", "MVC-API", "MVCS", "Hexagonal"},
+			DefaultValue: "MVC",
+		},
+		"env": {
+			Field:        &generateEnv,
+			Label:        "Do you want to generate .env? [y/n]",
+			Type:         "Prompt",
+			DefaultValue: "n",
+		},
+		"generate-server": {
+			Field:        &generateServer,
+			Label:        "Do you want to generate a server? [y/n]",
+			Type:         "Prompt",
+			DefaultValue: "n",
+		},
+		"server": {
+			Field:        &server,
+			Label:        "Choose the server framework",
+			Type:         "Select",
+			Options:      []string{"gin", "fiber", "echo", "chi", "none"},
+			DefaultValue: "none",
+			Condition: func() bool {
+				return generateServer == "y"
+			},
+		},
+	}
 
-    for _, flag := range orderedFlags {
-        attr := attributes[flag]
+	for _, flag := range orderedFlags {
+		attr := attributes[flag]
 
-        if cmd.Flags().Changed(flag) {
-            value, _ := cmd.Flags().GetString(flag)
-            *attr.Field = value
-        } else {
-            if attr.Type == "Select" && (attr.Condition == nil || attr.Condition()) {
-                *attr.Field = SelectPrompt(attr.Label, attr.Options.([]string))
-            } else if attr.Type == "Prompt" {
-                *attr.Field = InteractivePrompt(attr.Label, attr.DefaultValue)
-            }
-        }
+		if cmd.Flags().Changed(flag) {
+			value, _ := cmd.Flags().GetString(flag)
+			*attr.Field = value
+		} else {
+			if attr.Type == "Select" && (attr.Condition == nil || attr.Condition()) {
+				*attr.Field = SelectPrompt(attr.Label, attr.Options.([]string))
+			} else if attr.Type == "Prompt" {
+				*attr.Field = InteractivePrompt(attr.Label, attr.DefaultValue)
+			}
+		}
 
-        if flag == "env" && generateEnv == "y"{
-            filePath := filepath.Join(".", "templates", "default_dependencies.yaml")
+		if flag == "env" && generateEnv == "y" {
+			filePath := filepath.Join(".", "templates", "default_dependencies.yaml")
 			defaultDependencies, err := LoadDependencies(filePath)
 			if err != nil {
 				fmt.Println("⚠️ Error loading default dependencies:", err)
@@ -138,29 +139,28 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 			for _, dependency := range defaultDependencies {
 				dependencies = append(dependencies, dependency)
 			}
-        }
-        if flag == "server" && generateServer == "y" {
-            filePath := filepath.Join(".", "templates", server+"_server.yaml")
+		}
+		if flag == "server" && generateServer == "y" {
+			filePath := filepath.Join(".", "templates", server+"_server.yaml")
 			serverDependency, err := LoadDependency(filePath)
 			if err != nil {
 				fmt.Println("⚠️ Error loading server dependencies:", err)
 			}
 			dependencies = append(dependencies, serverDependency)
-        }
-    }
+		}
+	}
 
-    project.PackageName = GetDefaultPackageName() + "/" + project.Name
-    project.Dependencies = dependencies
-    return project
+	project.PackageName = GetDefaultPackageName() + "/" + project.Name
+	project.Dependencies = dependencies
+	return project
 }
-
 
 func CreateArchitectureStructure(project *Project) {
 	architecture := strings.ToLower(project.Architecture)
 	template, err := LoadTemplateFromArchitecture(filepath.Join(".", "templates"), architecture)
 	if err != nil {
 		fmt.Println("⚠️ Error loading template:", err)
-		return 
+		return
 	}
 	projectRoot := filepath.Join(project.Path, project.Name)
 	if err := os.MkdirAll(projectRoot, 0755); err != nil {
@@ -176,7 +176,7 @@ func CreateArchitectureStructure(project *Project) {
 		fmt.Println("⚠️ Error initializing Go module:", err)
 		return
 	}
-	if err := installDependencyPackages(project.Path,project.Dependencies); err != nil {
+	if err := InstallDependencyPackages(project); err != nil {
 		fmt.Println("⚠️ Error installing dependency packages:", err)
 		return
 	}
@@ -211,16 +211,3 @@ func runGoModInit(projectRoot, moduleName string) error {
 	return cmd.Run()
 }
 
-
-func installDependencyPackages(projectRoot string, dependencies []Dependency) error {
-	for _, dependency := range dependencies {
-		cmd := exec.Command("go", "get", dependency.Source)
-		cmd.Dir = projectRoot
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			return fmt.Errorf("⚠️ Failed to install dependency %s: %v", dependency.Source, err)
-		}
-	}
-	return nil
-}
