@@ -19,7 +19,7 @@ go install github.com/ShyamSundhar1411/structura-go@latest
 ## Usage  
 ### Initialize a new project  
 ```bash
-structura-go init myproject --framework gin
+structura init myproject --framework gin
 ```
 
 
