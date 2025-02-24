@@ -6,7 +6,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/ShyamSundhar1411/structura-go/domain"
+	"github.com/ShyamSundhar1411/structura/domain"
 	"github.com/spf13/cobra"
 )
 
