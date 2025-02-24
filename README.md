@@ -1,8 +1,8 @@
-# Structura-Go 🚀  
+# Structura 🚀  
 **Automated Folder Structure & Dependency Management for Go Projects**  
 
 ## Overview  
-Structura-Go is a project scaffolding tool that **automatically generates folder structures** (MVC, Hexagonal, MVCS) and **installs dependencies** with their required configurations for Go projects using the **Gin** or **Echo** framework.  
+Structura is a project scaffolding tool that **automatically generates folder structures** (MVC, Hexagonal, MVCS) and **installs dependencies** with their required configurations for Go projects using the **Gin** or **Echo** framework.  
 
 ## Features  
 ✅ Supports multiple architectures: **MVC, MVCS, Hexagonal, etc.**  
@@ -13,7 +13,7 @@ Structura-Go is a project scaffolding tool that **automatically generates folder
 
 ## Installation  
 ```bash
-go install github.com/yourusername/structura-go@latest
+go install github.com/ShyamSundhar1411/structura-go@latest
 ```
 
 ## Usage  
