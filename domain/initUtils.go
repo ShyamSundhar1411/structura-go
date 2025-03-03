@@ -63,7 +63,7 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 	attributes := map[string]Attribute{
 		"name": {
 			Field:        &project.Name,
-			Label:        "Project Name",
+			Label:        "App Name",
 			Type:         "Prompt",
 			DefaultValue: "cmd",
 		},
@@ -162,8 +162,8 @@ func CreateArchitectureStructure(project *Project) {
 		fmt.Println("⚠️ Error loading template:", err)
 		return
 	}
-	projectRoot := filepath.Join(project.Path, project.Name)
-	if err := os.MkdirAll(projectRoot, 0755); err != nil {
+	appRoot := filepath.Join(project.Path, project.Name) // App Root
+	if err := os.MkdirAll(appRoot, 0755); err != nil {
 		fmt.Println("⚠️ Error creating project root:", err)
 		return
 	}
@@ -172,7 +172,7 @@ func CreateArchitectureStructure(project *Project) {
 		fmt.Println(err)
 		return
 	}
-	if err := runGoModInit(project.Path, project.PackageName); err != nil {
+	if err := runInitCommands(project.Path, project.PackageName); err != nil {
 		fmt.Println("⚠️ Error initializing Go module:", err)
 		return
 	}
@@ -184,7 +184,7 @@ func CreateArchitectureStructure(project *Project) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("✅ Folder structure created successfully at", projectRoot)
+	fmt.Println("✅ Folder structure created successfully at app root", appRoot)
 
 }
 func LoadTemplateFromArchitecture(dir string, architecture string) (*Template, error) {
@@ -203,11 +203,26 @@ func LoadTemplateFromArchitecture(dir string, architecture string) (*Template, e
 	return &template, nil
 }
 
-func runGoModInit(projectRoot, moduleName string) error {
-	cmd := exec.Command("go", "mod", "init", moduleName)
-	cmd.Dir = projectRoot
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
-}
+func runInitCommands(projectPath, moduleName string) error {
+	fmt.Printf("🔹 Initializing Go module in %s...\n", moduleName)
+	goModInitCmd := exec.Command("go", "mod", "init", moduleName)
+	goModInitCmd.Dir = projectPath
+	goModInitCmd.Stdout = os.Stdout
+	goModInitCmd.Stderr = os.Stderr
+	if err := goModInitCmd.Run(); err != nil {
+		return fmt.Errorf("⚠️ Failed to initialize Go module: %w", err)
+	}
+	fmt.Println("✅ Go module initialized successfully!")
 
+	fmt.Printf("🔹 Initializing Git repository in %s...\n", projectPath)
+	gitInitCmd := exec.Command("git", "init")
+	gitInitCmd.Dir = projectPath
+	gitInitCmd.Stdout = os.Stdout
+	gitInitCmd.Stderr = os.Stderr
+	if err := gitInitCmd.Run(); err != nil {
+		return fmt.Errorf("⚠️ Failed to initialize Git repository: %w", err)
+	}
+	fmt.Println("✅ Git repository initialized successfully!")
+
+	return nil
+}

@@ -2,10 +2,11 @@ package domain
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
-	"gopkg.in/yaml.v3"
 )
+
 func WriteDependencyFile(fileName string, content string, dirPath string) error {
 	filePath := filepath.Join(dirPath, fileName)
 	if err := os.WriteFile(filePath, []byte(content), 0644); err != nil {

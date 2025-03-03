@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 )
 
-
 func createDependencyFiles(dependency Dependency, projectPath string) error {
 	if dependency.Content == nil {
 		fmt.Println("⚠️ No content for dependency:", dependency.Name)
@@ -16,10 +15,10 @@ func createDependencyFiles(dependency Dependency, projectPath string) error {
 	projectRoot := projectPath
 	for folder, fileContent := range dependency.Content {
 		var dirPath string
-		if folder == "root"{
+		if folder == "root" {
 			dirPath = projectRoot
-		} else{
-			dirPath =  filepath.Join(projectRoot, folder)
+		} else {
+			dirPath = filepath.Join(projectRoot, folder)
 			if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
 				return fmt.Errorf("❌ Failed to create directory %s: %v", dirPath, err)
 			}
@@ -47,7 +46,7 @@ func InstallDependencyPackages(project *Project) error {
 		if err := cmd.Run(); err != nil {
 			return fmt.Errorf("⚠️ Failed to install dependency %s: %v", dependency.Source, err)
 		}
-		if dependency.Content != nil{
+		if dependency.Content != nil {
 			createDependencyFiles(dependency, project.Path)
 		}
 	}

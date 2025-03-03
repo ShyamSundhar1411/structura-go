@@ -1,19 +1,19 @@
 package domain
 
 type Project struct {
-	Name           string
-	Path           string
-	PackageName	   string
-	Description    string
-	Architecture   string
-	Dependencies   []Dependency
+	Name         string
+	Path         string
+	PackageName  string
+	Description  string
+	Architecture string
+	Dependencies []Dependency
 }
 type Attribute struct {
-	Field *string
-	Label string
-	Type string
-	Options interface{}
-	Condition func() bool
+	Field        *string
+	Label        string
+	Type         string
+	Options      interface{}
+	Condition    func() bool
 	DefaultValue string
 }
 type Template struct {
@@ -29,13 +29,13 @@ type BoilerPlate struct {
 	Content     string `yaml:"content"`
 }
 type FileContent struct {
-    Files map[string]string `yaml:",inline"`
+	Files map[string]string `yaml:",inline"`
 }
 
 type Dependency struct {
-    Name        string                 `yaml:"name"`
-    Source      string                 `yaml:"source"`
-    Description string                 `yaml:"description"`
-    Version     string                 `yaml:"version"`
-    Content     map[string]FileContent `yaml:"content,omitempty"`
+	Name        string                 `yaml:"name"`
+	Source      string                 `yaml:"source"`
+	Description string                 `yaml:"description"`
+	Version     string                 `yaml:"version"`
+	Content     map[string]FileContent `yaml:"content,omitempty"`
 }

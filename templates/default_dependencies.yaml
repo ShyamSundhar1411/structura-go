@@ -45,7 +45,7 @@
           DBUser     string `mapstructure:"DB_USER"`
           DBPassword string `mapstructure:"DB_PASSWORD"`
           DBName     string `mapstructure:"DB_NAME"`
-
+          AppEnv     string `mapstructure:"APP_ENV"`
           APIKey    string `mapstructure:"API_KEY"`
           SecretKey string `mapstructure:"SECRET_KEY"`
 
@@ -76,6 +76,18 @@
           }
           return &env
         }
+      app.go: |
+        package bootstrap
+        type Application struct {
+          Env   *Env
+
+        }
+        func App() Application {
+          app := &Application{}
+          app.Env = NewEnv()
+          return *app
+        }
+
 
 - name: "logrus"
   source: "github.com/sirupsen/logrus"
