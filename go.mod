@@ -1,4 +1,4 @@
-module github.com/ShyamSundhar1411/structura
+module github.com/ShyamSundhar1411/structura-go
 
 go 1.23.4
 
