@@ -10,8 +10,8 @@ content:
       {{CUSTOM_IMPORTS}}
 
       func main() {
+        {{CUSTOM_BOOTSTRAP_SETUP}}
         e := echo.New()
-
         e.GET("/", func(c echo.Context) error {
           return c.String(http.StatusOK, "Hello, World!")
         })

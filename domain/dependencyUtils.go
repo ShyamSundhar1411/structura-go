@@ -7,11 +7,17 @@ import (
 	"path/filepath"
 	"strings"
 )
-func replacePlaceholders(content string, defaultImports []string, generateCommands map[string]string) string {
+func replacePlaceholders(content string, defaultImports []string, defaultBootstrapSetup [] string) string {
 
 	if strings.Contains(content, "{{CUSTOM_IMPORTS}}"){
 			importBlock := "import (\n\t" + strings.Join(defaultImports, "\n\t") + "\n)"
-			return strings.ReplaceAll(content, "{{CUSTOM_IMPORTS}}", importBlock)
+			content =  strings.ReplaceAll(content, "{{CUSTOM_IMPORTS}}", importBlock)
+	}
+	if strings.Contains(content, "{{CUSTOM_BOOTSTRAP_SETUP}}") && len(defaultBootstrapSetup) != 0{
+		importBlock := strings.Join(defaultBootstrapSetup, "\n\t")
+		content = strings.ReplaceAll(content, "{{CUSTOM_BOOTSTRAP_SETUP}}", importBlock)
+	}else{
+		content = strings.ReplaceAll(content, "{{CUSTOM_BOOTSTRAP_SETUP}}", "")
 	}
 	return content
 }
@@ -35,9 +41,13 @@ func createDependencyFiles(dependency Dependency, project *Project, generateComm
 		}
 		for fileName, content := range fileContent.Files {
 			filePath := filepath.Join(dirPath, fileName)
-			defaultImports := []string{}
+			defaultImports := []string{`"fmt"`}
+			defaultBootstrapSetup := []string{}
 			if generateCommands["env"] == "y" {
 				defaultImports = append(defaultImports, fmt.Sprintf(`"%s/bootstrap"`,project.PackageName))
+				defaultBootstrapSetup = append(defaultBootstrapSetup, fmt.Sprintf(`app:=bootstrap.App()`))
+				defaultBootstrapSetup = append(defaultBootstrapSetup, fmt.Sprintf(`env:=app.Env`))
+				defaultBootstrapSetup = append(defaultBootstrapSetup, fmt.Sprintf(`fmt.Println(env.AppEnv)`))
 			}
 			if generateCommands["serverType"] == "gin"{
 				defaultImports = append(defaultImports, `"github.com/gin-gonic/gin"`)
@@ -47,7 +57,7 @@ func createDependencyFiles(dependency Dependency, project *Project, generateComm
 				defaultImports = append(defaultImports, `"github.com/labstack/echo/v4"`)
 				defaultImports = append(defaultImports, `"net/http"`)
 			}
-			modifiedContent := replacePlaceholders(content,defaultImports, generateCommands)
+			modifiedContent := replacePlaceholders(content,defaultImports, defaultBootstrapSetup)
 			if err := os.WriteFile(filePath, []byte(modifiedContent), 0644); err != nil {
 				return fmt.Errorf("❌ Failed to create file %s: %v", filePath, err)
 			}
