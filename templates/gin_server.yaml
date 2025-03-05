@@ -7,9 +7,12 @@ content:
     main.go: |
         package main
 
-        import "github.com/gin-gonic/gin"
+        {{CUSTOM_IMPORTS}}
 
         func main(){
+
+          {{CUSTOM_BOOTSTRAP_SETUP}}
+
           gin.Default().Run(":8080")
           router := gin.Default()
           router.GET("/ping", func(c *gin.Context) {

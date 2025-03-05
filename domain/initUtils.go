@@ -55,7 +55,7 @@ func LoadDependency(filePath string) (Dependency, error) {
 	}
 	return dependency, nil
 }
-func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
+func AssignProjectAttributes(project *Project, cmd *cobra.Command) (*Project, map[string]string) {
 	orderedFlags := []string{"name", "package-name", "path", "description", "architecture", "env", "generate-server", "server"}
 	var generateServer, server, generateEnv string
 	var dependencies []Dependency
@@ -149,13 +149,17 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) *Project {
 			dependencies = append(dependencies, serverDependency)
 		}
 	}
-
+	generateCommands := map[string]string{
+		"env":        generateEnv,
+		"server":     generateServer,
+		"serverType": server,
+	}
 	project.PackageName = GetDefaultPackageName() + "/" + project.Name
 	project.Dependencies = dependencies
-	return project
+	return project, generateCommands
 }
 
-func CreateArchitectureStructure(project *Project) {
+func CreateArchitectureStructure(project *Project, generateComands map[string]string) {
 	architecture := strings.ToLower(project.Architecture)
 	template, err := LoadTemplateFromArchitecture(filepath.Join(".", "templates"), architecture)
 	if err != nil {
@@ -176,12 +180,16 @@ func CreateArchitectureStructure(project *Project) {
 		fmt.Println("⚠️ Error initializing Go module:", err)
 		return
 	}
-	if err := InstallDependencyPackages(project); err != nil {
+	if err := InstallDependencyPackages(project, generateComands); err != nil {
 		fmt.Println("⚠️ Error installing dependency packages:", err)
 		return
 	}
 	if err := CreateFolder(project.Path, template.Folders); err != nil {
 		fmt.Println(err)
+		return
+	}
+	if err := formatCommand(project.Path);err != nil{
+		fmt.Println("⚠️ Error formatting code:", err)
 		return
 	}
 	fmt.Println("✅ Folder structure created successfully at app root", appRoot)
@@ -225,4 +233,12 @@ func runInitCommands(projectPath, moduleName string) error {
 	fmt.Println("✅ Git repository initialized successfully!")
 
 	return nil
+}
+
+func formatCommand(projectPath string) error{
+	goFmtCmd := exec.Command("gofmt","-w","-s",".")
+	goFmtCmd.Dir = projectPath
+	goFmtCmd.Stdout = os.Stdout
+	goFmtCmd.Stderr = os.Stderr
+	return goFmtCmd.Run()
 }

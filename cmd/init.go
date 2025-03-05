@@ -18,8 +18,10 @@ var initCmd = &cobra.Command{
 	chosen architecture.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var project domain.Project
+		
+		projectPtr, generateCommands := domain.AssignProjectAttributes(&project, cmd)
+		project = *projectPtr
 
-		project = *domain.AssignProjectAttributes(&project, cmd)
 
 		template, err := domain.LoadTemplateFromArchitecture("./templates/", project.Architecture)
 		if err != nil {
@@ -29,7 +31,7 @@ var initCmd = &cobra.Command{
 
 		fmt.Printf("\n📂 Project Structure for '%s' (%s Architecture):\n", project.Name, project.Architecture)
 		domain.PrintFolderStructure(template.Folders, "")
-		domain.CreateArchitectureStructure(&project)
+		domain.CreateArchitectureStructure(&project,generateCommands)
 	},
 }
 

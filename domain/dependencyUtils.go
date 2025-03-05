@@ -5,9 +5,17 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
+func replacePlaceholders(content string, defaultImports []string, generateCommands map[string]string) string {
 
-func createDependencyFiles(dependency Dependency, project *Project) error {
+	if strings.Contains(content, "{{CUSTOM_IMPORTS}}"){
+			importBlock := "import (\n\t" + strings.Join(defaultImports, "\n\t") + "\n)"
+			return strings.ReplaceAll(content, "{{CUSTOM_IMPORTS}}", importBlock)
+	}
+	return content
+}
+func createDependencyFiles(dependency Dependency, project *Project, generateCommands map[string]string) error {
 	if dependency.Content == nil {
 		fmt.Println("⚠️ No content for dependency:", dependency.Name)
 		return nil
@@ -27,7 +35,20 @@ func createDependencyFiles(dependency Dependency, project *Project) error {
 		}
 		for fileName, content := range fileContent.Files {
 			filePath := filepath.Join(dirPath, fileName)
-			if err := os.WriteFile(filePath, []byte(content), 0644); err != nil {
+			defaultImports := []string{}
+			if generateCommands["env"] == "y" {
+				defaultImports = append(defaultImports, fmt.Sprintf(`"%s/bootstrap"`,project.PackageName))
+			}
+			if generateCommands["serverType"] == "gin"{
+				defaultImports = append(defaultImports, `"github.com/gin-gonic/gin"`)
+			}else if generateCommands["serverType"] == "fiber"{
+				defaultImports = append(defaultImports, `"github.com/gofiber/fiber/v2"`)
+			}else if generateCommands["serverType"] == "echo"{
+				defaultImports = append(defaultImports, `"github.com/labstack/echo/v4"`)
+				defaultImports = append(defaultImports, `"net/http"`)
+			}
+			modifiedContent := replacePlaceholders(content,defaultImports, generateCommands)
+			if err := os.WriteFile(filePath, []byte(modifiedContent), 0644); err != nil {
 				return fmt.Errorf("❌ Failed to create file %s: %v", filePath, err)
 			}
 			fmt.Println("📄 Created/verified file:", filePath)
@@ -36,7 +57,7 @@ func createDependencyFiles(dependency Dependency, project *Project) error {
 	return nil
 }
 
-func InstallDependencyPackages(project *Project) error {
+func InstallDependencyPackages(project *Project, generateCommands map[string]string) error {
 	projectRoot := filepath.Join(project.Path, project.Name)
 	dependencies := project.Dependencies
 	for _, dependency := range dependencies {
@@ -48,7 +69,7 @@ func InstallDependencyPackages(project *Project) error {
 			return fmt.Errorf("⚠️ Failed to install dependency %s: %v", dependency.Source, err)
 		}
 		if dependency.Content != nil {
-			createDependencyFiles(dependency, project)
+			createDependencyFiles(dependency, project, generateCommands)
 		}
 	}
 	return nil
