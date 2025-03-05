@@ -1,7 +1,7 @@
 - name: "viper"
   source: "github.com/spf13/viper"
   description: "A Go configuration management library"
-  version: "v1.10.0"
+  version: "latest"
   content:
     root:
       .env: |
@@ -92,7 +92,7 @@
 - name: "logrus"
   source: "github.com/sirupsen/logrus"
   description: "Structured logger for Go"
-  version: "v1.8.1"
+  version: "latest"
   content: null
 
 

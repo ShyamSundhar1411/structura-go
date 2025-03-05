@@ -1,11 +1,14 @@
 name: "gin"
 source: "github.com/gin-gonic/gin"
 description: "A web framework for Go"
-version: "v1.8.1"
+version: "latest"
 content:
   app:
-    server.go: |
+    main.go: |
         package main
+
+        import "github.com/gin-gonic/gin"
+
         func main(){
           gin.Default().Run(":8080")
           router := gin.Default()

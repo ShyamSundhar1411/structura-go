@@ -17,8 +17,8 @@ func createDependencyFiles(dependency Dependency, project *Project) error {
 		if folder == "root" {
 			dirPath = project.Path
 		} else if folder == "app" {
-			dirPath = filepath.Join(project.Path,project.Name)
-		}else {
+			dirPath = filepath.Join(project.Path, project.Name)
+		} else {
 			dirPath = filepath.Join(project.Path, folder)
 			if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
 				return fmt.Errorf("❌ Failed to create directory %s: %v", dirPath, err)
