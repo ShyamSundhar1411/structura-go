@@ -19,13 +19,13 @@ go install github.com/ShyamSundhar1411/structura-go@latest
 ## Usage  
 ### Initialize a new project  
 ```bash
-structura init myproject --framework gin
+structura-go init myproject --framework gin
 ```
 
 
 ### Generate project files  
 ```bash
-structura init
+structura-go init
 ```
 
 ## Folder Structure Example  
