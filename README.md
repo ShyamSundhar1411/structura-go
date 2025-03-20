@@ -1,47 +1,111 @@
-# Structura 🚀  
+
+# **Structura**  
 **Automated Folder Structure & Dependency Management for Go Projects**  
 
-## Overview  
-Structura is a project scaffolding tool that **automatically generates folder structures** (MVC, Hexagonal, MVCS) and **installs dependencies** with their required configurations for Go projects using the **Gin** or **Echo** framework.  
+---
 
-## Features  
-✅ Supports multiple architectures: **MVC, MVCS, Hexagonal, etc.**  
-✅ Auto-generates **folders & boilerplate files** (e.g., `env.go`, `.env`)  
-✅ Installs dependencies (`viper`, `logrus`, `gin`, etc.) using `go get`  
-✅ Configurable via **YAML files**  
-✅ Flexible & extensible  
+## **Overview**  
+Structura is a powerful **CLI tool** designed to automate the creation of consistent and production-ready folder structures for **Golang projects**. It supports multiple frameworks, including **Gin, Echo, Fiber, and Chi**, and offers flexible **YAML-based configuration** for managing dependencies and customizing project layouts.  
 
-## Installation  
+Whether you're building a RESTful API or a microservice, Structura handles:  
+- **Folder structuring**  
+- **Dependency installation**  
+- **Environment setup**  
+- **Custom configurations** via YAML  
+
+---
+
+## **Features**  
+- **Multiple Architectures:** MVC, MVCS, Hexagonal, and more  
+- **Auto-Generates Folders & Boilerplate Files:** (e.g., `env.go`, `.env`)  
+- **Dependency Management:** Installs `viper`, `logrus`, `gin`, `echo`, etc., using `go get`  
+- **YAML Configuration:** Flexible and customizable project initialization  
+- **Cross-Platform Compatibility:** Works on Windows, Linux, and macOS  
+
+---
+
+## **Installation**  
+Install Structura using `go install`:  
 ```bash
 go install github.com/ShyamSundhar1411/structura-go@latest
-```
+```  
+**Compatibility:** Go `>=1.18`  
 
-## Usage  
-### Initialize a new project  
+---
+
+## **Usage**  
+
+### **Initialize a New Project**  
+Create a new Go project with the desired architecture:  
 ```bash
-structura init myproject --framework gin
+structura-go init myproject --framework gin
 ```
-
-
-### Generate project files  
+For Echo:  
 ```bash
-structura init
+structura-go init myproject --framework echo
+```
+For Fiber:  
+```bash
+structura-go init myproject --framework fiber
+```
+For Chi:  
+```bash
+structura-go init myproject --framework chi
 ```
 
-## Folder Structure Example  
+### **Generate Project Files**  
+If you already have a project, you can simply generate the structure:  
+```bash
+structura-go init
 ```
-myproject/
-│── bootstrap/
+
+---
+
+## **Folder Structure Example**  
+
+When you run `structura-go init`, it generates the following folder structure:  
+
+```plaintext
+/myproject
+├── bootstrap
 │   ├── env.go
-│── .env
-│── main.go
-│── go.mod
-```
+├── config
+│   ├── config.go
+├── internal
+│   ├── handlers
+│   │   ├── user_handler.go
+│   ├── models
+│   │   ├── user.go
+│   ├── services
+│   │   ├── user_service.go
+├── .env
+├── main.go
+├── go.mod
+├── go.sum
+```  
+**Architecture Variations:**  
+- `MVC`: `models`, `services`, `handlers`, `routes`  
+- `MVCS`: Adds `services` layer for business logic separation  
+- `Hexagonal`: Adds `adapters` and `ports` folders for dependency inversion  
 
-## Contributing  
-1. Fork the repo  
-2. Create a feature branch  
-3. Open a PR 🚀  
 
-## License  
-MIT License  
+## **Contributing**  
+We welcome contributions!  
+To contribute:  
+1. Fork the repository  
+2. Create a new feature branch  
+3. Commit your changes  
+4. Open a Pull Request (PR)  
+
+---
+
+## **License**  
+Structura is licensed under the **MIT License**.  
+Feel free to use, modify, and distribute it.  
+
+---
+
+## **Feedback & Issues**  
+If you encounter any issues or have suggestions, feel free to open an issue on [GitHub](https://github.com/ShyamSundhar1411/structura-go/issues).  
+
+---
