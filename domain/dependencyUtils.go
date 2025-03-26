@@ -7,16 +7,17 @@ import (
 	"path/filepath"
 	"strings"
 )
-func replacePlaceholders(content string, defaultImports []string, defaultBootstrapSetup [] string) string {
 
-	if strings.Contains(content, "{{CUSTOM_IMPORTS}}"){
-			importBlock := "import (\n\t" + strings.Join(defaultImports, "\n\t") + "\n)"
-			content =  strings.ReplaceAll(content, "{{CUSTOM_IMPORTS}}", importBlock)
+func replacePlaceholders(content string, defaultImports []string, defaultBootstrapSetup []string) string {
+
+	if strings.Contains(content, "{{CUSTOM_IMPORTS}}") {
+		importBlock := "import (\n\t" + strings.Join(defaultImports, "\n\t") + "\n)"
+		content = strings.ReplaceAll(content, "{{CUSTOM_IMPORTS}}", importBlock)
 	}
-	if strings.Contains(content, "{{CUSTOM_BOOTSTRAP_SETUP}}") && len(defaultBootstrapSetup) != 0{
+	if strings.Contains(content, "{{CUSTOM_BOOTSTRAP_SETUP}}") && len(defaultBootstrapSetup) != 0 {
 		importBlock := strings.Join(defaultBootstrapSetup, "\n\t")
 		content = strings.ReplaceAll(content, "{{CUSTOM_BOOTSTRAP_SETUP}}", importBlock)
-	}else{
+	} else {
 		content = strings.ReplaceAll(content, "{{CUSTOM_BOOTSTRAP_SETUP}}", "")
 	}
 	return content
@@ -44,20 +45,23 @@ func createDependencyFiles(dependency Dependency, project *Project, generateComm
 			defaultImports := []string{`"fmt"`}
 			defaultBootstrapSetup := []string{}
 			if generateCommands["env"] == "y" {
-				defaultImports = append(defaultImports, fmt.Sprintf(`"%s/bootstrap"`,project.PackageName))
+				defaultImports = append(defaultImports, fmt.Sprintf(`"%s/bootstrap"`, project.PackageName))
 				defaultBootstrapSetup = append(defaultBootstrapSetup, fmt.Sprintf(`app:=bootstrap.App()`))
 				defaultBootstrapSetup = append(defaultBootstrapSetup, fmt.Sprintf(`env:=app.Env`))
 				defaultBootstrapSetup = append(defaultBootstrapSetup, fmt.Sprintf(`fmt.Println(env.AppEnv)`))
 			}
-			if generateCommands["serverType"] == "gin"{
+			if generateCommands["serverType"] == "gin" {
 				defaultImports = append(defaultImports, `"github.com/gin-gonic/gin"`)
-			}else if generateCommands["serverType"] == "fiber"{
+			} else if generateCommands["serverType"] == "fiber" {
 				defaultImports = append(defaultImports, `"github.com/gofiber/fiber/v2"`)
-			}else if generateCommands["serverType"] == "echo"{
+			} else if generateCommands["serverType"] == "echo" {
 				defaultImports = append(defaultImports, `"github.com/labstack/echo/v4"`)
 				defaultImports = append(defaultImports, `"net/http"`)
+			} else if generateCommands["serverType"] == "chi" {
+				defaultImports = append(defaultImports, `"net/http"`)
+				defaultImports = append(defaultImports, `"github.com/go-chi/chi/v5"`)
 			}
-			modifiedContent := replacePlaceholders(content,defaultImports, defaultBootstrapSetup)
+			modifiedContent := replacePlaceholders(content, defaultImports, defaultBootstrapSetup)
 			if err := os.WriteFile(filePath, []byte(modifiedContent), 0644); err != nil {
 				return fmt.Errorf("❌ Failed to create file %s: %v", filePath, err)
 			}

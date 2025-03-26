@@ -7,12 +7,11 @@ content:
     main.go: |
       package main
 
-      import (
-        "net/http"
-        "github.com/go-chi/chi/v5"
-      )
+      {{CUSTOM_IMPORTS}}
 
       func main() {
+        {{CUSTOM_BOOTSTRAP_SETUP}}
+        
         r := chi.NewRouter()
 
         r.Get("/", func(w http.ResponseWriter, r *http.Request) {
