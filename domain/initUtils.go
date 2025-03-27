@@ -166,7 +166,7 @@ func CreateArchitectureStructure(project *Project, generateComands map[string]st
 		fmt.Println("⚠️ Error loading template:", err)
 		return
 	}
-	appRoot := filepath.Join(project.Path, project.Name) // App Root
+	appRoot := filepath.Join(project.Path, project.Name)
 	if err := os.MkdirAll(appRoot, 0755); err != nil {
 		fmt.Println("⚠️ Error creating project root:", err)
 		return
@@ -185,6 +185,10 @@ func CreateArchitectureStructure(project *Project, generateComands map[string]st
 		return
 	}
 	if err := CreateFolder(project.Path, template.Folders); err != nil {
+		fmt.Println(err)
+		return
+	}
+	if err := CreateFile("readme.MD",template.Readme,project.Path); err != nil{
 		fmt.Println(err)
 		return
 	}

@@ -1,5 +1,26 @@
 name: Hexagonal
 description: "Hexagonal Architecture (also known as Ports and Adapters) separates the core business logic from the external systems (like databases, APIs, or user interfaces). The main goal is to make the core logic independent of external frameworks and tools."
+readme: |
+  # Hexagonal Architecture
+
+  Hexagonal Architecture (also known as Ports and Adapters) aims to **decouple the core business logic** from external dependencies. This makes the application:
+
+  - More **modular** and easier to test.
+  - Independent of frameworks, enabling easy switching of external services.
+  - Flexible with better separation of concerns.
+
+  ### Folder Structure:
+  - **Internal**
+    - `adapters`: Contains external-facing modules (e.g., database, API adapters).
+      - `handler`: Handles input/output logic.
+      - `repository`: Manages data persistence and retrieval.
+      - `tests`: Contains unit and integration tests for adapters.
+    - `core`: Contains the core business logic.
+      - `domain`: Defines domain entities and aggregates.
+      - `ports`: Defines interfaces for core logic.
+      - `services`: Contains the main business services.
+      - `tests`: Includes tests for the core business logic.
+      - `utils`: Provides utility classes and helper functions.
 folders:
   internal:
     adapters:

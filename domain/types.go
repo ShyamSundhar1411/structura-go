@@ -19,6 +19,7 @@ type Attribute struct {
 type Template struct {
 	Name        string      `yaml:"name"`
 	Description string      `yaml:"description"`
+	Readme 		string 		`yaml:"readme"`
 	Folders     interface{} `yaml:"folders"`
 }
 

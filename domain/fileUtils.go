@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-func WriteDependencyFile(fileName string, content string, dirPath string) error {
+func CreateFile(fileName string, content string, dirPath string) error {
 	filePath := filepath.Join(dirPath, fileName)
 	if err := os.WriteFile(filePath, []byte(content), 0644); err != nil {
 		return fmt.Errorf("⚠️ Failed to write dependency file %s: %v", fileName, err)

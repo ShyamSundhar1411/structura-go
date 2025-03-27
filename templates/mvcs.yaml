@@ -1,8 +1,19 @@
 name: MVCS
 description: "MVCS architecture extends MVC by adding a Service layer for better separation of concerns. The controller handles HTTP requests, the model represents the data, the routes define the API endpoints, and the services contain the business logic."
+readme: |
+  # MVCS Architecture
+
+  MVCS architecture extends MVC by adding a Service layer for better separation of concerns:
+
+  - The **controllers** handle HTTP requests.
+  - The **models** manage the data interactions.
+  - The **routes** define the API endpoints.
+  - The **services** contain the business logic.
+  - The **utils** provide helper functions and constants.
+
 folders:
-  - controllers   # Contains controllers which handle HTTP requests and responses
-  - models        # Contains the data models for interacting with the database
-  - routes        # Defines the routes/endpoints for the API
+  - controllers   
+  - models       
+  - routes        
   - services
-  - utils      # Contains business logic and services used by the controllers
+  - utils      
