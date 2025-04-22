@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/ShyamSundhar1411/structura-go/domain"
 	"github.com/spf13/cobra"
 )
@@ -21,9 +22,8 @@ var initCmd = &cobra.Command{
 		
 		projectPtr, generateCommands := domain.AssignProjectAttributes(&project, cmd)
 		project = *projectPtr
-
-
-		template, err := domain.LoadTemplateFromArchitecture("./templates/", project.Architecture)
+		
+		template, err := domain.LoadTemplateFromArchitecture(domain.TemplateFS, project.Architecture)
 		if err != nil {
 			fmt.Println("Error loading template:", err)
 			return

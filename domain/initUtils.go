@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"embed"
 	"fmt"
 	"os"
 	"os/exec"
@@ -10,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )
+
 
 func GetGitHubUsername() string {
 	cmd := exec.Command("git", "config", "--global", "user.name")
@@ -27,8 +29,8 @@ func GetDefaultPackageName() string {
 	}
 	return fmt.Sprintf("github.com/%s", username)
 }
-func LoadDependencies(filePath string) ([]Dependency, error) {
-	data, err := os.ReadFile(filePath)
+func LoadDependencies(fs embed.FS,filePath string) ([]Dependency, error) {
+	data, err := fs.ReadFile(filePath)
 	if err != nil {
 		fmt.Println("⚠️ Error reading:", filePath)
 		return nil, err
@@ -41,8 +43,8 @@ func LoadDependencies(filePath string) ([]Dependency, error) {
 	}
 	return dependencies, nil
 }
-func LoadDependency(filePath string) (Dependency, error) {
-	data, err := os.ReadFile(filePath)
+func LoadDependency(fs embed.FS,filePath string) (Dependency, error) {
+	data, err := fs.ReadFile(filePath)
 	if err != nil {
 		fmt.Println("⚠️ Error reading:", filePath)
 		return Dependency{}, err
@@ -131,8 +133,8 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) (*Project, ma
 		}
 
 		if flag == "env" && generateEnv == "y" {
-			filePath := filepath.Join(".", "templates", "default_dependencies.yaml")
-			defaultDependencies, err := LoadDependencies(filePath)
+			filePath := fmt.Sprintf("tempates/%s.yaml","default_dependencies")
+			defaultDependencies, err := LoadDependencies(TemplateFS,filePath)
 			if err != nil {
 				fmt.Println("⚠️ Error loading default dependencies:", err)
 			}
@@ -142,7 +144,7 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) (*Project, ma
 		}
 		if flag == "server" && generateServer == "y" {
 			filePath := filepath.Join(".", "templates", server+"_server.yaml")
-			serverDependency, err := LoadDependency(filePath)
+			serverDependency, err := LoadDependency(TemplateFS,filePath)
 			if err != nil {
 				fmt.Println("⚠️ Error loading server dependencies:", err)
 			}
@@ -161,7 +163,8 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) (*Project, ma
 
 func CreateArchitectureStructure(project *Project, generateComands map[string]string) {
 	architecture := strings.ToLower(project.Architecture)
-	template, err := LoadTemplateFromArchitecture(filepath.Join(".", "templates"), architecture)
+	
+	template, err := LoadTemplateFromArchitecture(TemplateFS, architecture)
 	if err != nil {
 		fmt.Println("⚠️ Error loading template:", err)
 		return
@@ -172,7 +175,7 @@ func CreateArchitectureStructure(project *Project, generateComands map[string]st
 		return
 	}
 
-	if err := CreateBoilerPlates(project); err != nil {
+	if err := CreateBoilerPlates(TemplateFS,project); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -199,9 +202,9 @@ func CreateArchitectureStructure(project *Project, generateComands map[string]st
 	fmt.Println("✅ Folder structure created successfully at app root", appRoot)
 
 }
-func LoadTemplateFromArchitecture(dir string, architecture string) (*Template, error) {
-	filePath := filepath.Join(dir, strings.ToLower(architecture)+".yaml")
-	data, err := os.ReadFile(filePath)
+func LoadTemplateFromArchitecture(fs embed.FS, architecture string) (*Template, error) {
+	filePath := fmt.Sprintf("templates/%s.yaml", strings.ToLower(architecture))
+	data, err := fs.ReadFile(filePath)
 	if err != nil {
 		fmt.Println("⚠️ Error reading:", filePath)
 		return nil, err

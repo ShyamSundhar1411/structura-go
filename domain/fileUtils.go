@@ -1,10 +1,12 @@
 package domain
 
 import (
+	"embed"
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
+
+	"gopkg.in/yaml.v3"
 )
 
 func CreateFile(fileName string, content string, dirPath string) error {
@@ -46,9 +48,9 @@ func CreateFolder(parentPath string, folders interface{}) error {
 	}
 	return nil
 }
-func CreateBoilerPlates(project *Project) error {
-	boilerPlateFilePath := filepath.Join("templates", "initial_structure.yaml")
-	data, err := os.ReadFile(boilerPlateFilePath)
+func CreateBoilerPlates(fs embed.FS,project *Project) error {
+	boilerPlateFilePath := fmt.Sprintf("templates/%s.yaml", "initial_structure")
+	data, err := fs.ReadFile(boilerPlateFilePath)
 	projectRoot := filepath.Join(project.Path, project.Name)
 	if err != nil {
 		return fmt.Errorf("❌ Error loading boiler plates: %v", err)
