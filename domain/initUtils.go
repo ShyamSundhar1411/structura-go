@@ -133,7 +133,7 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) (*Project, ma
 		}
 
 		if flag == "env" && generateEnv == "y" {
-			filePath := fmt.Sprintf("tempates/%s.yaml","default_dependencies")
+			filePath := fmt.Sprintf("templates/%s.yaml","default_dependencies")
 			defaultDependencies, err := LoadDependencies(TemplateFS,filePath)
 			if err != nil {
 				fmt.Println("⚠️ Error loading default dependencies:", err)
@@ -143,7 +143,7 @@ func AssignProjectAttributes(project *Project, cmd *cobra.Command) (*Project, ma
 			}
 		}
 		if flag == "server" && generateServer == "y" {
-			filePath := filepath.Join(".", "templates", server+"_server.yaml")
+			filePath := fmt.Sprintf("templates/%s_server.yaml", server)
 			serverDependency, err := LoadDependency(TemplateFS,filePath)
 			if err != nil {
 				fmt.Println("⚠️ Error loading server dependencies:", err)
